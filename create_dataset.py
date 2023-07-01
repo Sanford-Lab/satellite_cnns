@@ -59,13 +59,10 @@ def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
     return example.SerializeToString()
 
 
-def get_training_example(lonlat, patch_size = 128):
+def get_training_example(lonlat, patch_size = 128) -> tuple:
 	from benin import get_inputs_patch, get_labels_patch
 
-    return (
-        get_inputs_patch(lonlat, patch_size),
-        get_labels_patch(lonlat, patch_size),
-    )
+    return (get_inputs_patch(lonlat, patch_size), get_labels_patch(lonlat, patch_size))
 
 def run_tensorflow(
     data_path: str,
@@ -114,13 +111,16 @@ def run_tensorflow(
 
 
 def main() -> None:
-	""" 
-	Main script for creating dataset in DataFlow
+	"""Main script for creating dataset in DataFlow
+
+	Parses through arguments given to script to pass to
+	tensorflow dataset creation pipeline (run_tensorflow)
 
 	"""
 
-	import argparse
 	logging.getLogger().setLevel(logging.INFO)
+
+	import argparse
 
 	parser = argparse.ArgumentParser()
 
@@ -160,15 +160,6 @@ def main() -> None:
 
 
 
-
-
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-
 

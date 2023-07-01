@@ -115,19 +115,19 @@ def run_tensorflow(
 
 
 def main() -> None:
-	"""Main script for creating dataset in DataFlow
+    """Main script for creating dataset in DataFlow
 
-	Parses through arguments given to script to pass to
-	tensorflow dataset creation pipeline (run_tensorflow)
+    Parses through arguments given to script to pass to
+    tensorflow dataset creation pipeline (run_tensorflow)
 
-	"""
-
-	logging.getLogger().setLevel(logging.INFO)
-
-	import argparse
-
-	parser = argparse.ArgumentParser()
-
+    """
+    
+    import argparse
+    
+    logging.getLogger().setLevel(logging.INFO)
+    
+    parser = argparse.ArgumentParser()
+    
     parser.add_argument(
         "--data-path",
         required=True,

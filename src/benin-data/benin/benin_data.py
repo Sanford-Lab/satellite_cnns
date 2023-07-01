@@ -26,7 +26,7 @@ import ee
 from google.api_core import exceptions, retry
 import google.auth
 import requests
-from typing import Itterable
+from typing import Iterable
 
 import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured

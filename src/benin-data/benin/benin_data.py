@@ -55,22 +55,22 @@ ee.Initialize(
 
 
 def mask_clouds_landsat(image: ee.Image) -> ee.Image:
-  """
-  Function credit unknown @LS
+    """
+    Function credit unknown @LS
 
-  """
-  # Bits 3 and 5 are cloud shadow and cloud, respectively
-  cloudShadowBitMask = (1 << 3) # 1000 in base 2
-  cloudsBitMask = (1 << 5) # 100000 in base 2
+    """
+    # Bits 3 and 5 are cloud shadow and cloud, respectively
+    cloudShadowBitMask = (1 << 3) # 1000 in base 2
+    cloudsBitMask = (1 << 5) # 100000 in base 2
 
-  # Get the pixel QA band
-  qa = image.select('pixel_qa')
+    # Get the pixel QA band
+    qa = image.select('pixel_qa')
 
-  #Both flags should be set to zero, indicating clear conditions
-  mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0).bitwiseAnd(qa.bitwiseAnd(cloudsBitMask).eq(0))
+    #Both flags should be set to zero, indicating clear conditions
+    mask = qa.bitwiseAnd(cloudShadowBitMask).eq(0).bitwiseAnd(qa.bitwiseAnd(cloudsBitMask).eq(0))
 
-  # Mask image with clouds and shadows
-  return image.updateMask(mask)
+    # Mask image with clouds and shadows
+    return image.updateMask(mask)
 
 
 def get_inputs_image() -> ee.Image:
@@ -127,26 +127,28 @@ def get_labels_image(as_double:bool = True) -> ee.Image:
       labels image as ee.Image with 'target' band
     """
 
-  #Import Voronoi Raster, get treated
-  treated_voronoi = ee.FeatureCollection('projects/ls-test-3-24/assets/voronoi_villages').filter(ee.Filter.eq('treated', 1))
+    #Import Voronoi Raster, get treated
+    treated_voronoi = ee.FeatureCollection('projects/ls-test-3-24/assets/voronoi_villages')\
+                                .filter(ee.Filter.eq('treated', 1))
 
-  # Create a village mask based on the treated village raster
-  villagemask = treated_voronoi.filter(ee.Filter.notNull(['VID']))\
-                                        .reduceToImage(properties=['VID'],reducer= ee.Reducer.first())\
-                                        .mask()
+    # Create a village mask based on the treated village raster
+    villagemask = treated_voronoi.filter(ee.Filter.notNull(['VID']))\
+                                .reduceToImage(properties=['VID'],reducer= ee.Reducer\
+                                .first())\
+                                .mask()
 
-  # Create the target image using the village mask prepared earlier.
-  inputs = get_inputs_image()
-  l7Masked = inputs.updateMask(villagemask)
+    # Create the target image using the village mask prepared earlier.
+    inputs = get_inputs_image()
+    l7Masked = inputs.updateMask(villagemask)
 
-  # This part is hacky. How could we do it better?
-  l7Unmasked = l7Masked.unmask(-9999)
-  outside_circle = 'b("R") > -9000'
-  target = l7Unmasked.expression(outside_circle).rename("target")
+    # This part is hacky. How could we do it better?
+    l7Unmasked = l7Masked.unmask(-9999)
+    outside_circle = 'b("R") > -9000'
+    target = l7Unmasked.expression(outside_circle).rename("target")
 
-  if as_double: target = target.double()
+    if as_double: target = target.double()
 
-  return target
+    return target
 
 
 def sample_points(seed: int = 0, points_per_class = 2) -> Iterable[tuple[float, float]]:

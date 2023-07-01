@@ -1,0 +1,17 @@
+# This file includes work covered by the following copyright and permission notices:
+#
+#  Copyright 2023 Google LLC
+#  Licensed under the Apache License, Version 2.0 (the "License");
+
+# https://peps.python.org/pep-0621
+
+[project]
+name = "benin-data"
+version = "1.0.0"
+authors = [
+  { name="Dannie Daley", email="dannie.daley@yale.edu" },
+]
+description = "package for SPIRES Lab remote sensing"
+#dependencies = [
+#    "earthengine-api>=0.1.355"
+#]

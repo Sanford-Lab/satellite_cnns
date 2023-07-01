@@ -6,12 +6,12 @@
 # https://peps.python.org/pep-0621
 
 [project]
-name = "data"
+name = "kenya-data"
 version = "1.0.0"
 authors = [
   { name="Dannie Daley", email="dannie.daley@yale.edu" },
 ]
-description = "package for SPIRES Lab remote sensing"
+description = "Kenya data package for SPIRES Lab remote sensing"
 #dependencies = [
 #    "earthengine-api>=0.1.355"
 #]

@@ -8,6 +8,3 @@
 name = "serving"
 version = "1.0.0"
 description = "serving modules for SPIRES Lab"
-dependencies = [
-    "earthengine-api==0.1.355"
-]

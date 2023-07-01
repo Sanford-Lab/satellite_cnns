@@ -111,7 +111,6 @@ def get_inputs_image() -> ee.Image:
 
 
 def get_labels_image(as_double:bool = True) -> ee.Image:
-
     """ Retrieves the labels image for Benin data
 
         - Creates a mask where areas in villages are 1

@@ -62,7 +62,9 @@ def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
 def get_training_example(lonlat, patch_size = 128) -> tuple:
 	from benin import get_inputs_patch, get_labels_patch
 
-    return (get_inputs_patch(lonlat, patch_size), get_labels_patch(lonlat, patch_size))
+    return (
+    	get_inputs_patch(lonlat, patch_size), get_labels_patch(lonlat, patch_size)
+    )
 
 def run_tensorflow(
     data_path: str,

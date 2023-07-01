@@ -76,7 +76,7 @@ def mask_clouds_landsat(image: ee.Image) -> ee.Image:
 
 def get_inputs_image() -> ee.Image:
     """ Retrieves the input image for Benin data
-    
+
     Uses Landsat7
 
     Args:
@@ -190,6 +190,8 @@ def get_inputs_patch(point: tuple, patch_size: int) -> np.ndarray:
     """
     image = get_inputs_image()
     patch = get_patch(image, point, patch_size, 30)
+
+
     return structured_to_unstructured(patch)
 
 def get_labels_patch(point: tuple, patch_size: int) -> np.ndarray:
@@ -204,7 +206,10 @@ def get_labels_patch(point: tuple, patch_size: int) -> np.ndarray:
     """
     image = get_labels_image()
     patch = get_patch(image, point, patch_size, 30)
+
+
     return structured_to_unstructured(patch)
+
 
 @retry.Retry(deadline=10 * 60)  # seconds
 def get_patch(image: ee.Image, lonlat: tuple[float, float], patch_size: int, scale: int) -> np.ndarray:

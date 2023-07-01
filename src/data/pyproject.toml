@@ -12,6 +12,6 @@ authors = [
   { name="Dannie Daley", email="dannie.daley@yale.edu" },
 ]
 description = "package for SPIRES Lab remote sensing"
-dependencies = [
-    "earthengine-api==0.1.355"
-]
+#dependencies = [
+#    "earthengine-api>=0.1.355"
+#]

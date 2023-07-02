@@ -3,6 +3,11 @@ GC == Google Cloud
 
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
+## To Do
+[ ] Test pipeline output locally, though no serialization errors when running local pipeline.  
+[ ] Fix up text blocks to accurately reflect the current state of the nb.\
+[ ] Create test cases to locally test package functionality
+
 ## 6/29
 Current issue in running the pipeline locally ("EEException: Invalid number of coordinates: 1 [while running '[165]: 📑 Get example']"). Currently stack tracing to try to discover issue.
 - Added `SCALE`
@@ -23,3 +28,8 @@ Current issue in running the pipeline locally ("EEException: Invalid number of c
  - TODO: test pipeline output locally, though no serialization errors when running local pipeline.  
 - Another issue, though less important: Max workers for pipeline is 1 even though it's explicitly set as higher
  - Possible solution: idk; maybe GC setting
+
+## 8/2:
+- Updated package package file names (benin_data.py -> data.py, etc)
+- Changed `SCALE` in [benin/data.py](src/benin-data/benin/data.py) to split to `SAMPLE_SCALE` and `PATCH_SCALE`
+ - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)

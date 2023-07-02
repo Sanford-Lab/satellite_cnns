@@ -1,22 +1,21 @@
-
-# This file includes work covered by the following copyright and permission notices:
+# This file includes work and structure covered by the following copyright and permission notices:
 #
 #  Copyright 2023 Google LLC
 #  Licensed under the Apache License, Version 2.0 (the "License");
+#
+# ==============================================================================================================
+#
+# Data retrieval code for Benin for SPIRES Lab Projects.
+#
+#
+# Modify this file to change what create_dataset.py creates the testing/training datset from.
+#
+# Project patterns based on weather-forcasting sample:
+# https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting
+#
+# ______________________________________________________________________________________________________________
 
 
-"""
-Data retrieval code for Benin for SPIRES Lab Projects.
-
-
-Modify this file to change what create_dataset.py 
-creates the testing/training datset from.
-
-Project patterns based on weather-forcasting sample:
-https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting
-
-
-"""
 
 # For posponed evaluations
 #from __future__ import annotations
@@ -30,10 +29,6 @@ from typing import Iterable
 
 import numpy as np
 from numpy.lib.recfunctions import structured_to_unstructured
-
-
-# Default globals
-SCALE = 150
 
 
 # Authenticate and initialize Earth Engine with the default credentials.
@@ -53,7 +48,20 @@ ee.Initialize(
 )
 
 
+# Default globals
+PATCH_SCALE = 10 
+SAMPLE_SCALE = 1000
+assert(SAMPLE_SCALE % PATCH_SCALE == 0) # PATCH_SCALE should be multiple of SAMPLE_SCALE
 
+#OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+# The following code should be edited depending on the project.
+# 
+# To be a funcitonal file for creating a dataset, define
+#   - get_inputs_image()-> ee.Image
+#   - get_labels_image()-> ee.Image
+#   - sample_points(seed: int, points_per_class: int) -> Iterable[tuple[float, float]]
+#
+#OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 
 def mask_clouds_landsat(image: ee.Image) -> ee.Image:
     """
@@ -89,25 +97,27 @@ def get_inputs_image() -> ee.Image:
         - has benin geometry with 10000 buffer
 
     """
+
+    # Specify inputs (Landsat bands) to the model and the response variable.
     opticalBands = ['B3','B2','B1'] #RGB
     thermalBands = ['B4','B3'] #NIR
 
-    # Specify inputs (Landsat bands) to the model and the response variable.
-
-    BANDS = ['R', 'G', 'B', 'NDVI']
-    RESPONSE = 'target'
-
-    benin = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na','Benin')).set('ORIG_FID',0)
+    # Grab the Benin feature (shape of country)
+    benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na','Benin')).set('ORIG_FID',0)
 
     # Prepare the cloud masked LANDSAT 7 median composite image
-    # clip it to the outline of Benin and then select the R,G,B, and NDVI bands.
-    image = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2007-01-01', '2008-12-31')
-    image = (image.map(mask_clouds_landsat).median().clip(benin.geometry().buffer(10000)))
-    image_ndvi = image.normalizedDifference(thermalBands).rename(['NDVI'])
-    image_rgb = image.select(opticalBands).rename(['R','G','B'])
-    image = image_rgb.addBands(image_ndvi)
+    benin_input = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2007-01-01', '2008-12-31')
 
-    return image.unmask(0)
+    # Remove clouds, clip it to the outline of Benin (with buffer)
+    benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
+
+    # Create NDVI band, rename RGB
+    ndvi_img = benin_input.normalizedDifference(thermalBands).rename(['NDVI'])
+    rgb_img = benin_input.select(opticalBands).rename(['R','G','B'])
+
+    benin_input = rgb_img.addBands(ndvi_img)
+
+    return benin_input.unmask(0) 
 
 
 def get_labels_image(as_double:bool = True) -> ee.Image:
@@ -128,7 +138,8 @@ def get_labels_image(as_double:bool = True) -> ee.Image:
       labels image as ee.Image with 'target' band
     """
 
-    #Import Voronoi Raster, get treated
+    # Import vornoi a ('ls-test-3-24/assets/voronoi_villages')
+    # and convert to feature collection
     treated_voronoi = ee.FeatureCollection('projects/ls-test-3-24/assets/voronoi_villages')\
                                 .filter(ee.Filter.eq('treated', 1))
 
@@ -168,7 +179,7 @@ def sample_points(seed: int = 0, points_per_class = 2) -> Iterable[tuple[float, 
 
     points = target.stratifiedSample(
         points_per_class,
-        scale=SCALE,
+        scale=SAMPLE_SCALE,
         region=benin.geometry(),
         seed=seed,
         geometries=True,
@@ -177,6 +188,14 @@ def sample_points(seed: int = 0, points_per_class = 2) -> Iterable[tuple[float, 
 
     for point in points.toList(points.size()).getInfo():
         yield point["geometry"]["coordinates"]
+
+
+
+
+
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# The code below should not need to change between projects (how patches are retrieved)            #
+#XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
 def get_inputs_patch(point: tuple, patch_size: int) -> np.ndarray:
@@ -189,7 +208,7 @@ def get_inputs_patch(point: tuple, patch_size: int) -> np.ndarray:
     Returns: The pixel values of a patch as a NumPy array.
     """
     image = get_inputs_image()
-    patch = get_patch(image, point, patch_size, 30)
+    patch = get_patch(image, point, patch_size, PATCH_SCALE)
 
 
     return structured_to_unstructured(patch)
@@ -205,7 +224,7 @@ def get_labels_patch(point: tuple, patch_size: int) -> np.ndarray:
         The pixel values of a patch as a NumPy array.
     """
     image = get_labels_image()
-    patch = get_patch(image, point, patch_size, 30)
+    patch = get_patch(image, point, patch_size, PATCH_SCALE)
 
 
     return structured_to_unstructured(patch)
@@ -213,6 +232,15 @@ def get_labels_patch(point: tuple, patch_size: int) -> np.ndarray:
 
 @retry.Retry(deadline=10 * 60)  # seconds
 def get_patch(image: ee.Image, lonlat: tuple[float, float], patch_size: int, scale: int) -> np.ndarray:
+    """Gets the patch of pixels based on parameters.
+
+    Args:
+        point: A (longitude, latitude) coordinate.
+        patch_size: Size in pixels of the surrounding square patch.
+
+    Returns:
+        The pixel values of a patch as a NumPy array.
+    """
     geometry = ee.Geometry.Point(lonlat)
     url = image.getDownloadURL({
         "region": geometry.buffer(scale * patch_size / 2, 1).bounds(1),

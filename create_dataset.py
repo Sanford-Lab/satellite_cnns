@@ -147,19 +147,18 @@ def main() -> None:
         help="Limit the number of concurrent requests to Earth Engine.",
     )
     parser.add_argument(
-        "--min-batch-size",
+        "--patch-size",
         type=int,
-        default=MIN_BATCH_SIZE,
-        help="Minimum number of examples to write per data file.",
+        default=PATCH_SIZE,
+        help=f"Patch size for image. Default is {PATCH_SIZE}.",
     )
     args, beam_args = parser.parse_known_args()
 
     run_tensorflow(
         data_path=args.data_path,
-        num_dates=args.num_dates,
-        num_bins=args.num_bins,
+        points_per_class=args.ppc,
         max_requests=args.max_requests,
-        min_batch_size=args.min_batch_size,
+        patch_size=args.patch_size,
         beam_args=beam_args,
     )
 

@@ -34,6 +34,7 @@ from benin.benin_data import sample_points
 POINTS_PER_CLASS = 3
 PATCH_SIZE = 128
 MAX_REQUESTS = 20
+MIN_BATCH_SIZE = 100
 
 def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
     """Serializes inputs and labels NumPy arrays as a tf.Example.

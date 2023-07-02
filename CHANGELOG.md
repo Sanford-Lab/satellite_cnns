@@ -3,6 +3,11 @@ GC == Google Cloud
 
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
+## To Do
+[ ] Test pipeline output locally, though no serialization errors when running local pipeline.  
+[ ] Fix up text blocks to accurately reflect the current state of the nb
+[ ] Create test cases to locally test package functionality
+
 ## 6/29
 Current issue in running the pipeline locally ("EEException: Invalid number of coordinates: 1 [while running '[165]: 📑 Get example']"). Currently stack tracing to try to discover issue.
 - Added `SCALE`

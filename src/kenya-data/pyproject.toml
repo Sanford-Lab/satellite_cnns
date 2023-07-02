@@ -7,7 +7,7 @@
 
 [project]
 name = "kenya-data"
-version = "1.0.0"
+version = "0.1.0"
 authors = [
   { name="Dannie Daley", email="dannie.daley@yale.edu" },
 ]

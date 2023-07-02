@@ -48,7 +48,6 @@ def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
 
     Returns: The serialized tf.Example as bytes.
     """
-    import tensorflow as tf
 
     features = {
         name: tf.train.Feature(
@@ -124,6 +123,7 @@ def main() -> None:
     """
     
     import argparse
+    import tensorflow as tf
     
     logging.getLogger().setLevel(logging.INFO)
     

@@ -23,6 +23,7 @@ import apache_beam as beam
 from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 import logging
+import tensorflow as tf
 
 import ee
 
@@ -123,7 +124,6 @@ def main() -> None:
     """
     
     import argparse
-    import tensorflow as tf
     
     logging.getLogger().setLevel(logging.INFO)
     

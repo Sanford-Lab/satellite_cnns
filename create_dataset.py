@@ -2,22 +2,42 @@
 #
 #  Copyright 2023 Google LLC
 #  Licensed under the Apache License, Version 2.0 (the "License");
-
-
-"""
-Script to create_dataset for SPIRES Lab Projects.
-
-This script is designed to adapt to different countries
-
-Project patterns based on weather-forcasting sample:
-https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting
-
-
-"""
+#
+# ==============================================================================================================
+#
+# Script to create_dataset for SPIRES Lab Projects.
+#
+# This script is designed to adapt to different countries
+#
+# Project patterns based on weather-forcasting sample:
+# https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting
+#
+#______________________________________________________________________________________________________________
 
 # For posponed evaluations
 from __future__ import annotations
 
+
+# ========================================= #
+#   CHANGE THIS CODE DEPENDING ON PROJECT   #
+# +++++++++++++++++++++++++++++++++++++++++ #
+#                                           #
+#   Change import depending on data using:  #
+from benin.data import sample_points, \
+    get_inputs_patch, get_labels_patch      #
+#                                           #
+#       Change default globals:             #
+POINTS_PER_CLASS = 3                        #
+PATCH_SIZE = 128                            #
+MAX_REQUESTS = 20                           #
+MIN_BATCH_SIZE = 100                        #
+#                                           #
+# ========================================= #
+
+
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX #
+#              The rest of the code shouldn't need to be altered            #
+# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX #
 
 import apache_beam as beam
 from apache_beam.io.filesystems import FileSystems
@@ -25,15 +45,6 @@ from apache_beam.options.pipeline_options import PipelineOptions
 import logging
 import ee
 
-# Change import depending on data using
-from benin.benin_data import sample_points
-
-
-# Default globals
-POINTS_PER_CLASS = 3
-PATCH_SIZE = 128
-MAX_REQUESTS = 20
-MIN_BATCH_SIZE = 100
 
 def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
     """Serializes inputs and labels NumPy arrays as a tf.Example.
@@ -60,7 +71,8 @@ def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
 
 
 def get_training_example(lonlat, patch_size = 128) -> tuple:
-    from benin.benin_data import get_inputs_patch, get_labels_patch
+    # Ref #14: Change when implemented
+    #from benin.benin.data import get_inputs_patch, get_labels_patch
     
     return (
     	get_inputs_patch(lonlat, patch_size), get_labels_patch(lonlat, patch_size)
@@ -103,7 +115,7 @@ def run_tensorflow(
       (
           pipeline
           | "🌱 Make seeds" >> beam.Create([0])
-          | "📌 Sample points" >> beam.FlatMap(sample_points, points_per_class=points_per_class) # uses scale of 150
+          | "📌 Sample points" >> beam.FlatMap(sample_points, points_per_class=points_per_class)
           | "🃏 Reshuffle" >> beam.Reshuffle()
           | "🛰 Get examples" >> beam.Map(get_training_example, patch_size=patch_size)
           | "✍🏽 Serialize" >> beam.MapTuple(serialize_tensorflow)

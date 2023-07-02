@@ -33,3 +33,5 @@ Current issue in running the pipeline locally ("EEException: Invalid number of c
 - Updated package package file names (benin_data.py -> data.py, etc)
 - Changed `SCALE` in [benin/data.py](src/benin-data/benin/data.py) to split to `SAMPLE_SCALE` and `PATCH_SCALE`
  - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)
+ - Cleaned up [create_dataset.py](create_dataset.py)
+  - Specified what should be customized to change defaults

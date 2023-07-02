@@ -23,8 +23,6 @@ import apache_beam as beam
 from apache_beam.io.filesystems import FileSystems
 from apache_beam.options.pipeline_options import PipelineOptions
 import logging
-import tensorflow as tf
-
 import ee
 
 # Change import depending on data using
@@ -49,7 +47,8 @@ def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
 
     Returns: The serialized tf.Example as bytes.
     """
-
+    
+    import tensorflow as tf
     features = {
         name: tf.train.Feature(
             bytes_list=tf.train.BytesList(value=[tf.io.serialize_tensor(data).numpy()])
@@ -94,7 +93,6 @@ def run_tensorflow(
         beam_args: Apache Beam command line arguments to parse as pipeline options.
     """
     
-
     beam_options = PipelineOptions(
         beam_args,
         save_main_session=True,
@@ -105,10 +103,11 @@ def run_tensorflow(
       (
           pipeline
           | "🌱 Make seeds" >> beam.Create([0])
-          | "🛰 Sample points" >> beam.FlatMap(sample_points) # uses scale of 150
-          | "📖 Get examples" >> beam.Map(get_training_example)
+          | "📌 Sample points" >> beam.FlatMap(sample_points) # uses scale of 150
+          | "🃏 Reshuffle" >> beam.Reshuffle()
+          | "🛰 Get examples" >> beam.Map(get_training_example)
           | "✍🏽 Serialize" >> beam.MapTuple(serialize_tensorflow)
-          | "📚 Write TFRecords" >> beam.io.WriteToTFRecord(
+          | "📚 Write TFRecords" >> beam.io.tfrecordio.WriteToTFRecord(
               f"{data_path}/part", file_name_suffix=".tfrecord.gz"
           )
       )

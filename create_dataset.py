@@ -103,9 +103,9 @@ def run_tensorflow(
       (
           pipeline
           | "🌱 Make seeds" >> beam.Create([0])
-          | "📌 Sample points" >> beam.FlatMap(sample_points) # uses scale of 150
+          | "📌 Sample points" >> beam.FlatMap(sample_points, points_per_class=points_per_class) # uses scale of 150
           | "🃏 Reshuffle" >> beam.Reshuffle()
-          | "🛰 Get examples" >> beam.Map(get_training_example)
+          | "🛰 Get examples" >> beam.Map(get_training_example, patch_size=patch_size)
           | "✍🏽 Serialize" >> beam.MapTuple(serialize_tensorflow)
           | "📚 Write TFRecords" >> beam.io.tfrecordio.WriteToTFRecord(
               f"{data_path}/part", file_name_suffix=".tfrecord.gz"

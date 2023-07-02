@@ -5,7 +5,7 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 
 ## To Do
 [ ] Test pipeline output locally, though no serialization errors when running local pipeline.  
-[ ] Fix up text blocks to accurately reflect the current state of the nb
+[ ] Fix up text blocks to accurately reflect the current state of the nb.\
 [ ] Create test cases to locally test package functionality
 
 ## 6/29

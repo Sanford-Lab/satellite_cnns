@@ -14,6 +14,7 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
  - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)
  - Cleaned up [create_dataset.py](create_dataset.py)
   - Specified what should be customized to change defaults
+  - Tested inputs and labels patch using new `show_patches` function (to be added to a visualize.py file)
 
 ## 7/1:
 - Changed setup to clone SPIRES repo

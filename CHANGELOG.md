@@ -4,9 +4,7 @@ GC == Google Cloud
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
 ## To Do
-[ ] Test pipeline output locally, though no serialization errors when running local pipeline.  
-[ ] Fix up text blocks to accurately reflect the current state of the nb.\
-[ ] Create test cases to locally test package functionality
+[ ] Read/test uploaded NPZ files 
 
 ## 8/2:
 - Updated package package file names (benin_data.py -> data.py, etc)
@@ -14,7 +12,11 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
  - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)
  - Cleaned up [create_dataset.py](create_dataset.py)
   - Specified what should be customized to change defaults
-  - Tested inputs and labels patch using new `show_patches` function (to be added to a visualize.py file)
+- Tested inputs and labels patch using new `show_patches` function (to be added to a visualize.py file)
+- Added and tested new pipeline in [create_dataset.py](create_dataset.py)
+ - Uses compressed NumPy files instead of TFrecord. This fixes the missing tensorflow module using Dataflow (#4) because it isn't required.
+ - WORKING DISTRIBUTED RUNNER
+- Changed [benin_apache_pipeline.ipynb](benin_apache_pipeline.ipynb) to reflect current project state.
 
 ## 7/1:
 - Changed setup to clone SPIRES repo
@@ -37,7 +39,3 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 Current issue in running the pipeline locally ("EEException: Invalid number of coordinates: 1 [while running '[165]: 📑 Get example']"). Currently stack tracing to try to discover issue.
 - Added `SCALE`
 - Added functionality to make `get_labels_image` return label as double to match float64 of input image (resolved [#5](#5))
-
-
-
-

@@ -9,26 +9,26 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 ## 8/2:
 - Updated package package file names (benin_data.py -> data.py, etc)
 - Changed `SCALE` in [benin/data.py](src/benin-data/benin/data.py) to split to `SAMPLE_SCALE` and `PATCH_SCALE`
- - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)
- - Cleaned up [create_dataset.py](create_dataset.py)
+  - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)
+- Cleaned up [create_dataset.py](create_dataset.py)
   - Specified what should be customized to change defaults
 - Tested inputs and labels patch using new `show_patches` function (to be added to a visualize.py file)
 - Added and tested new pipeline in [create_dataset.py](create_dataset.py)
- - Uses compressed NumPy files instead of TFrecord. This fixes the missing tensorflow module using Dataflow (#4) because it isn't required.
- - WORKING DISTRIBUTED RUNNER
+  - Uses compressed NumPy files instead of TFrecord. This fixes the missing tensorflow module using Dataflow (#4) because it isn't required.
+  - WORKING DISTRIBUTED RUNNER
 - Changed [benin_apache_pipeline.ipynb](benin_apache_pipeline.ipynb) to reflect current project state.
 
 ## 7/1:
 - Changed setup to clone SPIRES repo
 - Refactored to use repo ^ packages (Added src/)
 - Tested DataFlow with [create_dataset.py](create_dataset.py) script
- - Fixed [#4](#4)
+  - Fixed [#4](#4)
 - TODO: General refactoring, probably need stricter version requirement checks
 - **Current issue**: `serialize_tensorflow` seems to be failing in DataFlow pipeline. See [failed jobs](https://console.cloud.google.com/dataflow/jobs?project=ls-test-3-24&authuser=0) in GC console.
- - Possible solution: packaging things better
- - TODO: test pipeline output locally, though no serialization errors when running local pipeline.  
+  - Possible solution: packaging things better
+  - TODO: test pipeline output locally, though no serialization errors when running local pipeline.  
 - Another issue, though less important: Max workers for pipeline is 1 even though it's explicitly set as higher
- - Possible solution: idk; maybe GC setting
+  - Possible solution: idk; maybe GC setting
 
 ## 6/30:
 - Fixed visualization to reflect `get_*_image` functionality

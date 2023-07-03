@@ -22,7 +22,7 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 - Changed setup to clone SPIRES repo
 - Refactored to use repo ^ packages (Added src/)
 - Tested DataFlow with [create_dataset.py](create_dataset.py) script
-  - Fixed [#4](#4)
+  - Fixed [#4](/../../issues/4) with built and attached data package
 - TODO: General refactoring, probably need stricter version requirement checks
 - **Current issue**: `serialize_tensorflow` seems to be failing in DataFlow pipeline. See [failed jobs](https://console.cloud.google.com/dataflow/jobs?project=ls-test-3-24&authuser=0) in GC console.
   - Possible solution: packaging things better

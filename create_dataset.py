@@ -37,6 +37,7 @@ MIN_BATCH_SIZE = 100                        #
 
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX #
 #              The rest of the code shouldn't need to be altered            #
+#                                                                           #
 # XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX #
 
 import apache_beam as beam

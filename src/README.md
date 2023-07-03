@@ -4,15 +4,15 @@
 /src/                               Package directory
 
     ├── benin-data/
-    |   ├── pyproject.toml
-    │   └── benin                   Package for Benin project
-    │     ├── __init__.py  
-    │     └── bein_data.py          Functionality to pull data for Benin project
+    |    ├── pyproject.toml
+    │    └── benin                   Package for Benin project
+    │        ├── data.py  
+    │        └── __init__.py           Functionality to pull data for Benin project
     ├── kenya-data/                 
-    │   ├── pyproject.toml
-    │   └── kenya                   Unfinished package for Kenya project
-    │      ├── __init__.py          
-    │      └── kenya_data.py        
+    │    ├── pyproject.toml
+    │    └── kenya                   Unfinished package for Kenya project
+    │        ├── data.py          
+    │        └── __init__.py        
     └── README.md                   Package info
 
 

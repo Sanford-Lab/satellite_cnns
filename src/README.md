@@ -7,13 +7,13 @@
     |    ├── pyproject.toml
     │    └── benin                   Package for Benin project
     │        ├── data.py  
-    │        └── __init__.py           Functionality to pull data for Benin project
+    │        └── __init__.py         Functionality to pull data for Benin project
     ├── kenya-data/                 
     │    ├── pyproject.toml
     │    └── kenya                   Unfinished package for Kenya project
     │        ├── data.py          
     │        └── __init__.py        
-    └── README.md                   Package info
+    └── README.md                    Package info
 
 
 ## Info

@@ -122,11 +122,10 @@ def get_inputs_image() -> ee.Image:
 
 def get_labels_image(as_double:bool = True) -> ee.Image:
     """ Retrieves the labels image for Benin data
-
-        - Creates a mask where areas in villages are 1
-        and outisde are 0
-        - Geometry created based on get_inputs_image
-        return
+    
+        - Uses voronoi asset 'projects/ls-test-3-24/assets/voronoi_villages'
+        - Creates a mask where areas in villages are 1 and outisde are 0
+        - Geometry created based on get_inputs_image return
 
 
     Args:
@@ -165,6 +164,7 @@ def get_labels_image(as_double:bool = True) -> ee.Image:
 
 def sample_points(seed: int = 0, points_per_class = 2) -> Iterable[tuple[float, float]]:
     """ Generates coordinate tuple of coordinates for sampling based on the labels image
+        - Order of point generatiom: inside outside villages then in
 
     Args:
       seed (int): seed for stratifiedSample
@@ -184,7 +184,6 @@ def sample_points(seed: int = 0, points_per_class = 2) -> Iterable[tuple[float, 
         seed=seed,
         geometries=True,
     )
-
 
     for point in points.toList(points.size()).getInfo():
         yield point["geometry"]["coordinates"]
@@ -230,7 +229,7 @@ def get_labels_patch(point: tuple, patch_size: int) -> np.ndarray:
     return structured_to_unstructured(patch)
 
 
-@retry.Retry(deadline=10 * 60)  # seconds
+@retry.Retry(deadline=10 * 60)  # Requires retries to work within 10 min
 def get_patch(image: ee.Image, lonlat: tuple[float, float], patch_size: int, scale: int) -> np.ndarray:
     """Gets the patch of pixels based on parameters.
 

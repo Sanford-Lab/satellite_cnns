@@ -37,7 +37,7 @@ class DatasetFromPath(Dataset):
     
     def __init__(self, data_path : str) -> None:
         files = glob(os.path.join(data_path, "*.npz"))
-        if files <= 0:
+        if len(files) <= 0:
             raise EmptyDirectoryError()
     
         first_file = np.load(files[0])

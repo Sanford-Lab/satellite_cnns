@@ -128,7 +128,7 @@ class CustomSubset(Dataset[T_co]):
         elif isinstance(idx, str) & (idx == 'inputs' or idx == 'labels'):
             if idx == 'inputs': 
                 return self.dataset['inputs'][[self.indices[i] for i in idx]]
-            return self.dataset['labels'][[self.indices[i] for i in idx]]
+            return self.dataset['labels'][[self.indices[i] for i in self.indices]]
         return self.dataset[self.indices[idx]]
 
     def __len__(self):

@@ -15,7 +15,9 @@ from create_dataset import get_training_example
 
 
 PATCH_SIZE = 128
-
+points = [[2.474858607749282, 12.03293323078099],
+            [2.241296633878206, 11.197500016549837],
+            [1.899936825912788, 7.325761141994698]]
 # ===============================================================
 files = glob(os.path.join('/content/testing-data', "*.npz"))
 
@@ -28,6 +30,8 @@ def read_data_file(filename) -> dict[str, np.ndarray]:
 def flatten(batch: dict) -> dict:
   return {key: np.concatenate(values) for key, values in batch.items()}
 
+
+test_file = write_npz([get_training_example(p) for p in points], "/src/testing/dump")
 print("Batch:")
 load2 = np.load(test_file)
 print(f"Inputs shape (# in batch, dim1, dim2, dim3): {load2['inputs'].shape}")
@@ -38,9 +42,7 @@ print(dic['filename'].keys())
 print(f"Flattened inputs: {dic['filename']['inputs'].shape}")
 print(f"Flattened labels: {dic['filename']['labels'].shape}")
 
-points = [[2.474858607749282, 12.03293323078099],
-            [2.241296633878206, 11.197500016549837],
-            [1.899936825912788, 7.325761141994698]]
+
 # ===============================================================
 
 def write_test_file(func):

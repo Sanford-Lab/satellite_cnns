@@ -59,8 +59,12 @@ class DatasetFromPath(Dataset):
         return self._labels
         
     def __getitem__(self, index) -> Any:
+        if(isinstance(index, int)):
+            return {'inputs': self._inputs[index], 'labels' : self._labels[index]}
+        elif isinstance(index, str) & (index == 'inputs' | index == 'labels'):
+            return self._inputs if index == 'inputs' else self._labels
         # Using dictionary approach like in weather forecasting sample
-        return {'inputs': self._inputs[index], 'labels' : self._labels[index]}
+        
     
     def __len__(self) -> int:
         return len(self._inputs) 

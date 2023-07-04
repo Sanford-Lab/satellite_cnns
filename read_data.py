@@ -1,6 +1,5 @@
-# torch.utils.data.Dataset
-
-
+import os
+from glob import glob
 from typing import Any
 
 from torch.utils.data import Dataset, random_split
@@ -37,10 +36,9 @@ class DatasetFromPath(Dataset):
     """
     
     def __init__(self, data_path : str) -> None:
-        import os
-        from glob import glob
         files = glob(os.path.join(data_path, "*.npz"))
-        assert(len(files) > 0)
+        if files <= 0:
+            raise Exception(data_path)
         first_file = np.load(files[0])
         inputs, labels = first_file['inputs'], first_file['labels']
         files = files[1:]
@@ -64,3 +62,12 @@ def test_train_split(set:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed =
     seed_gen = Generator().manual_seed(SEED)
     
     return random_split(dataset=set, lengths=[ratio, (1-ratio)], generator=seed_gen)
+
+
+class EmptyDirectoryError(Exception):
+    
+    def __init__(self, path: str,
+                 message=f'Path "{path}" is empty or does not contain files ending in .npz') -> None:
+        self.path = path
+        self.message = message
+        super().__init__(self.message)

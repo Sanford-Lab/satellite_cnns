@@ -50,7 +50,13 @@ class DatasetFromPath(Dataset):
 
         self._inputs = inputs
         self._labels = labels
+        
+        
+    def get_inputs(self) -> np.ndarray:
+        return self._inputs
     
+    def get_labels(self) -> np.ndarray:
+        return self._labels
         
     def __getitem__(self, index) -> Any:
         # Using dictionary approach like in weather forecasting sample
@@ -59,11 +65,7 @@ class DatasetFromPath(Dataset):
     def __len__(self) -> int:
         return len(self._inputs) 
     
-    def get_inputs(self) -> np.ndarray:
-        return self._inputs
-    
-    def get_labels(self) -> np.ndarray:
-        return self._labels
+
     
 def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
     """Splits the given dataset by the ratio given. Implements a random split per 

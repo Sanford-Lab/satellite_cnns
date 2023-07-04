@@ -60,6 +60,16 @@ class DatasetFromPath(Dataset):
         return len(self._inputs) 
     
 def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
+    """Splits the given dataset by the ratio given
+
+    Args:
+        data (DatasetFromPath): dataset
+        ratio (float, optional): ratio between 0 and 1 inclusive. Defaults to TEST_TRAIN_RATIO.
+        seed (_type_, optional): _description_. Defaults to SEED.
+
+    Returns:
+        tuple: (test subset, train sub) both as torch.utils.data.Subset objects
+    """
     assert(ratio >=0 and ratio <= 1)
     seed_gen = Generator().manual_seed(SEED)
     

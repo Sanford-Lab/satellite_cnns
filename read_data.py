@@ -59,13 +59,20 @@ class DatasetFromPath(Dataset):
     def __len__(self) -> int:
         return len(self._inputs) 
     
+    def get_inputs(self) -> np.ndarray:
+        return self._inputs
+    
+    def get_labels(self) -> np.ndarray:
+        return self._labels
+    
 def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
-    """Splits the given dataset by the ratio given
+    """Splits the given dataset by the ratio given. Implements a random split per 
+    torch.utils.data.randomsplit
 
     Args:
         data (DatasetFromPath): dataset
         ratio (float, optional): ratio between 0 and 1 inclusive. Defaults to TEST_TRAIN_RATIO.
-        seed (_type_, optional): _description_. Defaults to SEED.
+        seed (_type_, optional): seed used for shuffling a random split. Defaults to SEED.
 
     Returns:
         tuple: (test subset, train sub) both as torch.utils.data.Subset objects

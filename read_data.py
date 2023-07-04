@@ -59,7 +59,7 @@ class DatasetFromPath(Dataset):
     def __len__(self) -> int:
         return len(self._inputs) 
     
-def test_train_split(set:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
+def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
     assert(ratio >=0 and ratio <= 1)
     seed_gen = Generator().manual_seed(SEED)
     

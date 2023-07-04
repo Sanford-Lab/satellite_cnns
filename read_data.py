@@ -14,7 +14,7 @@ T = TypeVar('T')
 
 import numpy as np
 from torch.utils.data import Dataset
-from torch import Generator
+from torch import Generator, randperm
 from torch._utils import _accumulate
 
 # Constants.

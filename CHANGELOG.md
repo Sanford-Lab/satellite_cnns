@@ -7,6 +7,10 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Read/test uploaded NPZ files\
 [ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))
 
+## 8/3:
+- Created library [read_data.py](read_data.py) for reading the data in NPZ format
+- Began translation of weather forcasting reading NPZ, read_dataset to avoid use of Hugging Face Datasets
+
 ## 8/2:
 - Updated package package file names (benin_data.py -> data.py, etc)
 - Changed `SCALE` in [benin/data.py](src/benin-data/benin/data.py) to split to `SAMPLE_SCALE` and `PATCH_SCALE`

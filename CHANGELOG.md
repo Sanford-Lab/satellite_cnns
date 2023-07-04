@@ -7,11 +7,18 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Read/test uploaded NPZ files\
 [ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))
 
-## 8/3:
+## Future improvements
+[ ] Support for TensorFlow framework 
+[ ] Parallel processing for reading data files (read_data.py)
+
+## 7/4:
+- 
+
+## 7/3:
 - Created library [read_data.py](read_data.py) for reading the data in NPZ format
 - Began translation of weather forcasting reading NPZ, read_dataset to avoid use of Hugging Face Datasets
 
-## 8/2:
+## 7/2:
 - Updated package package file names (benin_data.py -> data.py, etc)
 - Changed `SCALE` in [benin/data.py](src/benin-data/benin/data.py) to split to `SAMPLE_SCALE` and `PATCH_SCALE`
   - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)

@@ -10,7 +10,7 @@ import os
 from glob import glob
 import numpy as np
 
-from read_data import write_npz
+from create_dataset import write_npz
 from create_dataset import get_training_example
 
 

@@ -1,9 +1,8 @@
 # torch.utils.data.Dataset
 
-import os
-from glob import glob
+
 from typing import Any
-import numpy as np
+
 from torch.utils.data import Dataset, random_split
 from torch import Generator
 
@@ -38,6 +37,8 @@ class DatasetFromPath(Dataset):
     """
     
     def __init__(self, data_path : str) -> None:
+        import os
+        from glob import glob
         files = glob(os.path.join(data_path, "*.npz"))
         assert(len(files) > 0)
         first_file = np.load(files[0])

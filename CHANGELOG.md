@@ -12,7 +12,8 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Parallel processing for reading data files (read_data.py)
 
 ## 7/4:
-- 
+- Finished and tested torch.utils.data.Dataset custom subclass (DatasetFromPath)
+- Tested workflow up to use of DatasetFromPath and splitting the dataset
 
 ## 7/3:
 - Created library [read_data.py](read_data.py) for reading the data in NPZ format

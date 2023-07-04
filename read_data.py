@@ -1,55 +1,65 @@
 # torch.utils.data.Dataset
 
 import os
-import glob
+from glob import glob
 from typing import Any
 import numpy as np
 from torch.utils.data import Dataset, random_split
 from torch import Generator
 
 # Constants.
-NUM_DATASET_READ_PROC = 16  # number of processes to read data files in parallel
-NUM_DATASET_PROC = os.cpu_count() or 8  # number of processes for CPU transformations
+SEED = 0
+TEST_TRAIN_RATIO = 0.66
+"""
+Planning Notes
+- We want to take in a data_path and train/test ratio to return a
+    dictionary, dataDict:
+    - dataDict keys are "train" and "test" with their values as 
+    torch.utils.data.Dataset(s) representing a split torch.utils.data.Dataset
+    for the combined numpy arrays in data_path
+- Input: data_path, Ouput: dataDict ^
+1) Get file names from data_path using glob
+2) Use file names to load the NPZ using np.load
+    - this has two numpy files in it ('inputs', 'labels')
+    - npz['inputs'] is a numpy array with the inputs (#, 128,128,4)
+    - npz['labels'] is (#, 128,128,1)
+        - where # is the number of patches
+    * What we ultimately want to do is to vstack these input and
+    labels arrays for each file
+        - Greedy approach: create a list of arrays, use vstack (use generator?) 
 
+"""
 
-## NOT WORKING CURRENTLY
-class DatsetFromPath(Dataset):
-    """torch.utils.data.Dataset subclass for Benin Data"""
+class DatasetFromPath(Dataset):
+    """torch.utils.data.Dataset custom subclass
+    Expects: data_path to directory containing .npz files where the NumPy
+    files are named 'inputs' and 'labels' containing respective np.ndarrays 
+    of shape (# in batch, PATCH_SIZE, PATCH_SIZE, # of bands)
+    """
     
     def __init__(self, data_path : str) -> None:
         files = glob(os.path.join(data_path, "*.npz"))
-        
-        data : dict= {"filename": files}.map(
-            self.read_data_file, 
-            num_proc=NUM_DATASET_READ_PROC,
-            remove_columns=["filename"]
-        ).map(self.flatten, batched=True, num_proc=NUM_DATASET_PROC)
-        
-        self._inputs = data["inputs"]
-        self._labels = data["labels"]
+        assert(len(files) > 0)
+        first_file = np.load(files[0])
+        inputs, labels = first_file['inputs'], first_file['labels']
+        files = files[1:]
+        for f in files:
+            loaded = np.load(f)
+            inputs, labels = np.vstack((inputs, loaded['inputs'])), np.vstack((labels, loaded['labels']))
+
+        self._inputs = inputs
+        self._labels = labels
     
         
     def __getitem__(self, index) -> Any:
-        return (self._inputs[index], self._labels[index])
+        # Using dictionary approach like in weather forecasting sample
+        return {'inputs': self._inputs[index], 'labels' : self._labels[index]}
     
     def __len__(self) -> int:
         return len(self._inputs) 
     
-    def read_data_file(item: dict[str,str]) -> dict[str, np.ndarray]:
-        with open(item["filename"], "rb") as f:
-            npz = np.load(f)
-            return {"inputs": npz["inputs"], "labels": npz["labels"]}
+def test_train_split(set:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
+    assert(ratio >=0 and ratio <= 1)
+    seed_gen = Generator().manual_seed(SEED)
     
-    def flatten(batch: dict) -> dict:
-        return {key: np.concatenate(values) for key, values in batch.items()}
-
-def read_dataset(data_path: str, train_test_ratio: float, seed=0) -> tuple:
-    assert(train_test_ratio <= 1)
-    dataset = DatsetFromPath(data_path)
-    
-    seed_gen = Generator().manual_seed(seed)
-    return random_split(
-        dataset=dataset,
-        lengths=[train_test_ratio, (1-train_test_ratio)],
-        generator=seed_gen)
-    
+    return random_split(dataset=set, lengths=[ratio, (1-ratio)], generator=seed_gen)

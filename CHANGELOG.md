@@ -12,7 +12,8 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 
 ## Future improvements
 [ ] Support for TensorFlow framework\
-[ ] Parallel processing for reading data files (read_data.py)
+[ ] Parallel processing for reading data files (read_data.py)\
+[ ] Weather sample augments it's examples, good to implement in future training
 
 ## 7/4:
 - Finished and tested torch.utils.data.Dataset custom subclass (DatasetFromPath)

@@ -16,3 +16,6 @@ description = "Package for Benin model training (Pytorch) for SPIRES Lab remote 
 dependencies = [
     "torch==1.13.1",  # check https://cloud.google.com/vertex-ai/docs/training/pre-built-containers#pytorch for latest
 ]
+
+[project.scripts]
+benin-trainer = "benin.train:main"

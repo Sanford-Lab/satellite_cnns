@@ -3,6 +3,8 @@ GC == Google Cloud
 
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
+## Currently Working on: custom PyTorch Datset class and Subset functionality
+
 ## To Do
 [ ] Read/test uploaded NPZ files\
 [ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))
@@ -14,6 +16,7 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 ## 7/4:
 - Finished and tested torch.utils.data.Dataset custom subclass (DatasetFromPath)
 - Tested workflow up to use of DatasetFromPath and splitting the dataset
+ - Modified notebook to reflect work
 
 ## 7/3:
 - Created library [read_data.py](read_data.py) for reading the data in NPZ format

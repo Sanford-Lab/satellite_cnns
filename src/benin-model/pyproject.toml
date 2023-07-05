@@ -12,7 +12,7 @@ version = "0.1.0"
 authors = [
   { name="Dannie Daley", email="dannie.daley@yale.edu" },
 ]
-description = "package for SPIRES Lab remote sensing"
+description = "Package for Benin model training (Pytorch) for SPIRES Lab remote sensing"
 dependencies = [
-    "earthengine-api>=0.1.355",
+    "torch==1.13.1",  # check https://cloud.google.com/vertex-ai/docs/training/pre-built-containers#pytorch for latest
 ]

@@ -19,10 +19,8 @@ import matplotlib.pyplot as plt
 from matplotlib import colors
 import numpy as np
 
-from benin.data import get_inputs_image, get_labels_image
 
-
-# NOTE: This function is only set up for Benin
+# NOTE: This function is only set up for Benin labels (assuming range [0,2])
 def show_patch(inputs_patch: np.ndarray, labels_patch: np.ndarray)-> None: 
     """Shows patch plot for Benin. Blue = inside village, red = outside village 
 

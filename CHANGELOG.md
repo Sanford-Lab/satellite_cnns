@@ -16,6 +16,10 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Parallel processing for reading data files (read_data.py)\
 [ ] Weather sample augments it's examples, good to implement in future training
 
+## 7/5:
+- Started Pytorch U-Net implementation and package (benin-model) to use for training (train.py)
+  - Moving away from weather forcasting implementation (more object oriented) to avoid using Hugging Face Trainer. Instead implementing U-Net (https://github.com/milesial/Pytorch-UNet)
+
 ## 7/4:
 - Finished and tested torch.utils.data.Dataset custom subclass (DatasetFromPath)
 - Tested workflow up to use of DatasetFromPath and splitting the dataset

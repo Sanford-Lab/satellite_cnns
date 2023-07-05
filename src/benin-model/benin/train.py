@@ -1,7 +1,6 @@
 import os
 
 from torch import optim, cuda, channels_last
-from torch.cuda import OutOfMemoryError
 from torch import device as get_device
 from torch.utils.data import DataLoader
 
@@ -125,7 +124,7 @@ def main() -> None:
             optimizer=args.optimizer)
         
         
-    except OutOfMemoryError:
+    except cuda.OutOfMemoryError:
         # If we run out of memory, use checkpointing
         run(data_path=args.data_path,
             model_path=args.model_path,

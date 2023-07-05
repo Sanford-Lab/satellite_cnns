@@ -8,6 +8,7 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 ## To Do
 [ ] Read/test uploaded NPZ files\
 [ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))
+[ ] Change all float64s to float32s to match better with Pytorch (create_dataset change please)
 
 ## Future improvements
 [ ] Support for TensorFlow framework\

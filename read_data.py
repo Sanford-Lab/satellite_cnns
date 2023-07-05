@@ -59,8 +59,9 @@ class DatasetFromPath(Dataset):
             loaded = np.load(f)
             inputs, labels = np.vstack((inputs, loaded['inputs'])), np.vstack((labels, loaded['labels']))
 
-        self._inputs = inputs
-        self._labels = labels
+        # We're going to put it to float32 to be 
+        self._inputs = np.float32(inputs)
+        self._labels = np.float32(labels)
         
         
     def get_inputs(self) -> np.ndarray:

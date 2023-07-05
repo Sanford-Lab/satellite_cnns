@@ -59,7 +59,7 @@ class DatasetFromPath(Dataset):
             loaded = np.load(f)
             inputs, labels = np.vstack((inputs, loaded['inputs'])), np.vstack((labels, loaded['labels']))
 
-        # We're going to put it to float32 to be 
+        # We're going to put it to float32 to be consistant w NumPy floats
         self._inputs = np.float32(inputs)
         self._labels = np.float32(labels)
         
@@ -109,7 +109,7 @@ class EmptyDirectoryError(Exception):
         super().__init__(self.message)
         
 class CustomSubset(Dataset[T_co]):
-    r"""
+    """
     Subset of a dataset at specified indices.
 
     Args:

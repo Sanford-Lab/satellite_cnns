@@ -9,36 +9,18 @@ from typing import (
     TypeVar
 )
 
-T_co = TypeVar('T_co', covariant=True)
-T = TypeVar('T')
-
 import numpy as np
 from torch.utils.data import Dataset
 from torch import Generator, randperm
 from torch._utils import _accumulate
 
+T_co = TypeVar('T_co', covariant=True)
+T = TypeVar('T')
+
 # Constants.
 SEED = 0
 TRAIN_TEST_RATIO = 0.66
-"""
-Planning Notes
-- We want to take in a data_path and train/test ratio to return a
-    dictionary, dataDict:
-    - dataDict keys are "train" and "test" with their values as 
-    torch.utils.data.Dataset(s) representing a split torch.utils.data.Dataset
-    for the combined numpy arrays in data_path
-- Input: data_path, Ouput: dataDict ^
-1) Get file names from data_path using glob
-2) Use file names to load the NPZ using np.load
-    - this has two numpy files in it ('inputs', 'labels')
-    - npz['inputs'] is a numpy array with the inputs (#, 128,128,4)
-    - npz['labels'] is (#, 128,128,1)
-        - where # is the number of patches
-    * What we ultimately want to do is to vstack these input and
-    labels arrays for each file
-        - Greedy approach: create a list of arrays, use vstack (use generator?) 
 
-"""
 
 class DatasetFromPath(Dataset):
     """torch.utils.data.Dataset custom subclass

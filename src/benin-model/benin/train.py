@@ -12,9 +12,10 @@ from benin.npz_dataset import DatasetFromPath, train_test_split, TRAIN_TEST_RATI
 
 
 # move these to model?
+# Currently not being used, just set up for classificaiton
 LOSSES = {
-    'MSE': torch.optim.MSELoss(),
-    'CrossEntropy' : torch.optim.CrossEntropyLoss(),
+    'MSE': torch.nn.MSELoss,
+    'CrossEntropy' : torch.nn.CrossEntropyLoss,
 }
 
 OPTIMIZERS = {

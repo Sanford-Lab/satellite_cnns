@@ -67,19 +67,6 @@ def run_torch(
     train_loader = DataLoader(train_set, shuffle=True, **loader_args)
     val_loader = DataLoader(test_set, shuffle=False, drop_last=True, **loader_args)
     
-    # Optimizer
-    given_opt = OPTIMIZERS[optimizer]
-    optimizer = given_opt(model.parameters(),
-                    lr=LEARNING_RATE,
-                    weight_decay=WEIGHT_DECAY,
-                    momentum=MOMENTUM,
-                    foreach=True)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=5)  # goal: maximize Dice score
-    grad_scaler = torch.cuda.amp.GradScaler(enabled=mixed_precision)
-        # Loss criterion
-    criterion = torch.nn.CrossEntropyLoss() if model.n_classes > 1 else torch.nn.BCEWithLogitsLoss()
-    global_step = 0
-    
     # Make Model
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     logging.info(f'Using device {device}')
@@ -93,6 +80,19 @@ def run_torch(
     model = model.to(memory_format=torch.channels_last)
     model.to(device)
     if checkpointing: model.use_checkpointing()
+    
+    # Optimizer
+    given_opt = OPTIMIZERS[optimizer]
+    optimizer = given_opt(model.parameters(),
+                    lr=LEARNING_RATE,
+                    weight_decay=WEIGHT_DECAY,
+                    momentum=MOMENTUM,
+                    foreach=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=5)  # goal: maximize Dice score
+    grad_scaler = torch.cuda.amp.GradScaler(enabled=mixed_precision)
+        # Loss criterion
+    criterion = torch.nn.CrossEntropyLoss() if model.n_classes > 1 else torch.nn.BCEWithLogitsLoss()
+    global_step = 0
     
     logging.info(f'''Starting training:
         Epochs:          {epochs}

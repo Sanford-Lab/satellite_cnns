@@ -9,6 +9,7 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))\
 [ ] Change all float64s to float32s to match better with Pytorch (create_dataset change please)\
 [ ] Adjust train.py to support different dataset shapes (num of input and label bands)\
+[ ] Add logger in train.py\
 [x] Read/test uploaded NPZ files\
 
 
@@ -16,6 +17,9 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Support for TensorFlow framework\
 [ ] Parallel processing for reading data files (read_data.py)\
 [ ] Weather sample augments it's examples, good to implement in future training
+
+## 7/6:
+- Continued work on U-Net implementation and train.py
 
 ## 7/5:
 - Started Pytorch U-Net implementation and package (benin-model) to use for training (train.py)

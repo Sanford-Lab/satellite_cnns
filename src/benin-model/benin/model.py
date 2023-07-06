@@ -1,7 +1,7 @@
 
 from torch import Tensor, nn, as_tensor, cuda, no_grad, optim
 from torch.utils import checkpoint
-from typing import AnyType
+from typing import Any as AnyType
 import numpy as np
 
 LOSSES = {

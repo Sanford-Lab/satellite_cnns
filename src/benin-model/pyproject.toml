@@ -1,7 +1,12 @@
-# This file includes work covered by the following copyright and permission notices:
+# This package includes work covered by the following copyright and permission notices:
 #
-#  Copyright 2023 Google LLC
-#  Licensed under the Apache License, Version 2.0 (the "License");
+#  GitHub repo milesial/Pytorch-UNet, commit f2625b
+#     train.py
+#     evaluate.py
+#     unet/unet_model.py
+#     unet/unet_parts.py
+#     utils/dice_score.py
+#  Licensed under GNU General Public License v3.0
 
 # https://peps.python.org/pep-0621
 
@@ -15,6 +20,7 @@ authors = [
 description = "Package for Benin model training (Pytorch) for SPIRES Lab remote sensing"
 dependencies = [
     "torch==1.13.1",  # check https://cloud.google.com/vertex-ai/docs/training/pre-built-containers#pytorch for latest
+    "numpy==1.23.5",
 ]
 
 [project.scripts]

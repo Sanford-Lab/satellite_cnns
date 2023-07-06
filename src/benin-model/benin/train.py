@@ -20,7 +20,8 @@ LOSSES = {
 
 OPTIMIZERS = {
     'Adam' : torch.optim.Adam,
-    'SGD' : torch.optim.SGD
+    'RMS' : torch.optim.RMSprop,
+    'SGD' : torch.optim.SGD,
 }
 
 # Default values
@@ -30,6 +31,7 @@ LEARNING_RATE = 1e-5
 WEIGHT_DECAY= 1e-8
 MOMENTUM : float= 0.999
 GRADIENT_CLIPPING : float = 1.0
+OPTIMIZER = 'RMS'
 
 dir_checkpoint = Path('./checkpoints/')
 
@@ -41,7 +43,7 @@ def run_torch(
     batch_size: int = BATCH_SIZE,
     train_test_ratio: float = TRAIN_TEST_RATIO,
     checkpointing: bool = False,
-    optimizer : str= 'Adam',
+    optimizer : str= OPTIMIZER,
     mixed_precision = False,
     gradient_clipping = GRADIENT_CLIPPING
 ) -> None:
@@ -83,11 +85,15 @@ def run_torch(
     
     # Optimizer
     given_opt = OPTIMIZERS[optimizer]
-    optimizer = given_opt(model.parameters(),
-                    lr=LEARNING_RATE,
-                    weight_decay=WEIGHT_DECAY,
-                    momentum=MOMENTUM,
-                    foreach=True)
+    if optimizer == 'RMS':
+        optimizer = given_opt(model.parameters(),
+                        lr=LEARNING_RATE,
+                        weight_decay=WEIGHT_DECAY,
+                        momentum=MOMENTUM,
+                        foreach=True)
+    else:
+        raise NotImplementedError
+    
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=5)  # goal: maximize Dice score
     grad_scaler = torch.cuda.amp.GradScaler(enabled=mixed_precision)
         # Loss criterion
@@ -202,7 +208,7 @@ def main() -> None:
     parser.add_argument(
         "--optimizer",
         type=str,
-        default='Adam',
+        default=OPTIMIZER,
         help="Optimizer used for training (Adam or SGD)",
     )
     parser.add_argument(

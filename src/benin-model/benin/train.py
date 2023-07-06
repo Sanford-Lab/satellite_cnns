@@ -6,9 +6,9 @@ import torch
 from torch.utils.data import DataLoader
 import torch.nn.functional as F
 
-from model import UNet, MoveDim
-from dice_score import dice_loss, evaluate
-from npz_dataset import DatasetFromPath, train_test_split, TRAIN_TEST_RATIO
+from benin.model import UNet, MoveDim
+from benin.dice_score import dice_loss, evaluate
+from benin.npz_dataset import DatasetFromPath, train_test_split, TRAIN_TEST_RATIO
 
 
 # move these to model?

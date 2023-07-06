@@ -12,7 +12,7 @@ from torch import (
 )
 import torch.functional as F
 
-from model import MoveDim
+from benin.model import MoveDim
 
 
 def dice_coeff(input: Tensor, target: Tensor, reduce_batch_first: bool = False, epsilon: float = 1e-6):

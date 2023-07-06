@@ -114,26 +114,28 @@ def run_torch(
     # Run training
     for epoch in range(1, epochs + 1):
         model.train()
+        epoch_loss = 0
         logging.info(f'Starting training epoch {epoch}')
         for batch in train_loader:
-            
+
             # Put inputs and labels in correct shape order
             to_channels_first = MoveDim(-1, 1)
             inputs, labels = to_channels_first(batch['inputs']),to_channels_first(batch['labels'])
 
+            
             assert inputs.shape[1] == model.n_channels, \
                 f'Network has been defined with {model.n_channels} input channels, ' \
                 f'but loaded inputs have {inputs.shape[1]} channels. Please check that ' \
                 'the inputs are loaded correctly.'
 
-            inputs = inputs.to(device=device, dtype=torch.float32, memory_format=torch.channels_last)
+            inputs = inputs.to(device=device, dtype=torch.float32)
             labels = labels.to(device=device, dtype=torch.long)
 
             with torch.autocast(device.type if device.type != 'mps' else 'cpu', enabled=mixed_precision):
                 masks_pred = model(inputs)
                 if model.n_classes == 1:
-                    loss = criterion(masks_pred.squeeze(1), labels.float())
-                    loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), labels.float(), multiclass=False)
+                    loss = criterion(masks_pred.squeeze(1), labels.float().squeeze(1))
+                    loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), labels.float().squeeze(1), multiclass=False)
                 else:
                     loss = criterion(masks_pred, labels)
                     loss += dice_loss(
@@ -170,8 +172,7 @@ def run_torch(
             logging.info(f'Checkpoint {epoch} saved!')
     
     # Save model
-    torch.save(model.state_dict(), model_path)
-
+    torch.save(model.state_dict(), f'{model_path}_UNET')
 
 def main() -> None:
     import argparse

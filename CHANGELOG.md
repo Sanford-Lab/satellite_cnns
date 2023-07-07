@@ -1,5 +1,6 @@
 # dd_changenotes:
 GC == Google Cloud
+GS == Google Storage
 
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
@@ -23,6 +24,12 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 
 ## 7/6:
 - Continued work on U-Net implementation and train.py
+- Produced a PyTorch model with train.py locally (model training effectiveness untested)
+  - finished proof of concept implementation of benin-model package
+- Ran traning on VertexAI
+  - took npz files from GS bucket 
+- Added more helpful to model
+- Added basic notebook annotaiton update for training demonstration
 
 ## 7/5:
 - Started Pytorch U-Net implementation and package (benin-model) to use for training (train.py)

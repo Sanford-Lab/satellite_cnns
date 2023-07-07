@@ -32,7 +32,7 @@ class DatasetFromPath(Dataset):
     def __init__(self, data_path : str) -> None:
         files = glob(os.path.join(data_path, "*.npz"))
         if len(files) <= 0:
-            raise EmptyDirectoryError()
+            raise EmptyDirectoryError(data_path)
     
         first_file = np.load(files[0])
         inputs, labels = first_file['inputs'], first_file['labels']
@@ -90,9 +90,9 @@ def train_test_split(data:DatasetFromPath, ratio:float = TRAIN_TEST_RATIO, seed 
 
 class EmptyDirectoryError(Exception):
     
-    def __init__(self,
+    def __init__(self, path,
                  message=f'Path is empty or does not contain files ending in .npz') -> None:
-        self.message = message
+        self.message = message + f'\tPath given: \"{path}\"'
         super().__init__(self.message)
         
 class CustomSubset(Dataset[T_co]):

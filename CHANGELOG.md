@@ -1,13 +1,50 @@
 # dd_changenotes:
 GC == Google Cloud
+GS == Google Storage
 
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
-## To Do
-[ ] Read/test uploaded NPZ files\
-[ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))
+## Currently Working on: custom PyTorch Datset class and Subset functionality
 
-## 8/2:
+## To Do
+[ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))\
+[ ] Change all float64s to float32s to match better with Pytorch (create_dataset change please)\
+[ ] Adjust train.py to support different dataset shapes (num of input and label bands)\
+[ ] Add logger in train.py\
+[x] Read/test uploaded NPZ files\
+
+
+## Future improvements
+[ ] Support for TensorFlow framework\
+[ ] Parallel processing for reading data files (read_data.py)\
+[ ] Weather sample augments it's examples, good to implement in future training
+[ ] Save created model directly to VertexAI
+  - Ref "Training did not produce a Managed Model returning None. Training Pipeline projects/978289642310/locations/us-central1/trainingPipelines/5677616430787330048 is not configured to upload a Model. Create the Training Pipeline with model_serving_container_image_uri and model_display_name passed in. Ensure that your training script saves to model to os.environ['AIP_MODEL_DIR']."
+
+
+## 7/6:
+- Continued work on U-Net implementation and train.py
+- Produced a PyTorch model with train.py locally (model training effectiveness untested)
+  - finished proof of concept implementation of benin-model package
+- Ran traning on VertexAI
+  - took npz files from GS bucket 
+- Added more helpful to model
+- Added basic notebook annotaiton update for training demonstration
+
+## 7/5:
+- Started Pytorch U-Net implementation and package (benin-model) to use for training (train.py)
+  - Moving away from weather forcasting implementation (more object oriented) to avoid using Hugging Face Trainer. Instead implementing U-Net (https://github.com/milesial/Pytorch-UNet)
+
+## 7/4:
+- Finished and tested torch.utils.data.Dataset custom subclass (DatasetFromPath)
+- Tested workflow up to use of DatasetFromPath and splitting the dataset
+ - Modified notebook to reflect work
+
+## 7/3:
+- Created library [read_data.py](read_data.py) for reading the data in NPZ format
+- Began translation of weather forcasting reading NPZ, read_dataset to avoid use of Hugging Face Datasets
+
+## 7/2:
 - Updated package package file names (benin_data.py -> data.py, etc)
 - Changed `SCALE` in [benin/data.py](src/benin-data/benin/data.py) to split to `SAMPLE_SCALE` and `PATCH_SCALE`
   - Stratified sampling at too low of a scale is very memory intenisve and that kind of precision isn't needed. We can increase the strat sampling scale as long as we make sure that the patches retireved from EE is scaled... to the scale (ex: if patch scale is 10, sample scale can be 10,100,1000, etc)

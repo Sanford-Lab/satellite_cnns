@@ -1,3 +1,17 @@
+#
+# This module allows you to create a PyTorch torch.utils.data.Dataset from 
+# a path that contains NumPy compressed files (NPZ) files
+#
+#   - Expects *.npz.files to be 'inputs' and 'labels'
+#   - train_test_split: splits DatasetFromPath into a custom subset 
+#     (CustomSubset) for more convenient data access
+#   * Currently should be good to go for different projects as long as
+#     npz files are in correct format
+#
+#   SPIRES Lab, 2023
+# ______________________________________________________________________________________________________________
+
+
 import os
 from glob import glob
 from typing import (
@@ -17,7 +31,7 @@ from torch._utils import _accumulate
 T_co = TypeVar('T_co', covariant=True)
 T = TypeVar('T')
 
-# Constants.
+# Default values
 SEED = 0
 TRAIN_TEST_RATIO = 0.66
 
@@ -67,9 +81,7 @@ class DatasetFromPath(Dataset):
     def __str__(self) -> str:
         return f'Dataset from \'{self._ogpath}\', size: {self.__len__()}, inputs: {self._inputs.shape}, labels: {self._labels.shape}'
     
-    
 
-    
 def train_test_split(data:DatasetFromPath, ratio:float = TRAIN_TEST_RATIO, seed = SEED)-> tuple:
     """Splits the given dataset by the ratio given. Implements a random split per 
     torch.utils.data.randomsplit

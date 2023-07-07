@@ -1,8 +1,26 @@
+# This package includes work covered by the following copyright and permission notices:
+#
+#  GitHub repo milesial/Pytorch-UNet, commit f2625b
+#     unet/unet_model.py
+#     unet/unet_parts.py
+#
+#  Licensed under GNU General Public License v3.0
+# ______________________________________________________________________________________
+#
+# U-Net model implementation from milesial/Pytorch-UNet
+# (from the @milesial implementation). Refactoring still required
+#   - Model and layers are unchanged from milesial/Pytorch-UNet, commit f2625b
+#   * Put whatever models needed in this file *
+#   * Should be good to go for any project *
+#
+#   SPIRES Lab, 2023
+# ======================================================================================
 
-from torch import Tensor, nn, as_tensor, cuda, no_grad, optim
+from torch import Tensor, nn, as_tensor, optim
 from torch.utils import checkpoint
 from typing import Any as AnyType
 import numpy as np
+
 
 LOSSES = {
     'MSE': nn.MSELoss(),
@@ -15,7 +33,6 @@ OPTIMIZERS = {
 }
 
 
-            
 class UNet(nn.Module):
     # https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_model.py
     def __init__(self, n_channels, n_classes, bilinear=False):
@@ -92,10 +109,10 @@ class MoveDim(nn.Module):
     
     
     
-# - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 # UNET LAYERS
 # https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
-# - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 from torch import cat
 

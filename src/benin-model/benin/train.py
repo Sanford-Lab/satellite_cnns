@@ -1,3 +1,24 @@
+# This package includes work covered by the following copyright and permission notices:
+#
+#  GitHub repo milesial/Pytorch-UNet, commit f2625b
+#     train.py
+#
+#  Licensed under GNU General Public License v3.0
+# ______________________________________________________________________________________
+#
+# This script is set up to create and train a model based on U-Net architecture
+# (from the @milesial implementation). Refactoring still required
+#
+#   - Uses npz_dataset.py to read npz files and create torch dataset
+#   - trains based on parameters
+#   * CURRENTLY ONLY SET UP FOR SINGLE CLASS CLASSIFCATION *
+#   * NOT CHECKED FOR NON-BENIN PROJECT SUPPORT *
+#
+#   SPIRES Lab, 2023
+# ======================================================================================
+
+
+
 import os
 import logging
 from pathlib import Path
@@ -11,19 +32,6 @@ from benin.dice_score import dice_loss, evaluate
 from benin.npz_dataset import DatasetFromPath, train_test_split, TRAIN_TEST_RATIO
 
 
-# move these to model?
-# Currently not being used, just set up for classificaiton
-LOSSES = {
-    'MSE': torch.nn.MSELoss,
-    'CrossEntropy' : torch.nn.CrossEntropyLoss,
-}
-
-OPTIMIZERS = {
-    'Adam' : torch.optim.Adam,
-    'RMS' : torch.optim.RMSprop,
-    'SGD' : torch.optim.SGD,
-}
-
 # Default values
 EPOCHS : int= 10
 BATCH_SIZE : int = 512 # 2^n best
@@ -34,7 +42,6 @@ GRADIENT_CLIPPING : float = 1.0
 OPTIMIZER = 'RMS'
 
 dir_checkpoint = Path('./checkpoints/')
-
 
 def run_torch(
     data_path: str,
@@ -84,9 +91,8 @@ def run_torch(
     if checkpointing: model.use_checkpointing()
     
     # Optimizer
-    given_opt = OPTIMIZERS[optimizer]
     if optimizer == 'RMS':
-        optimizer = given_opt(model.parameters(),
+        optimizer = torch.optim.RMSpro(model.parameters(),
                         lr=LEARNING_RATE,
                         weight_decay=WEIGHT_DECAY,
                         momentum=MOMENTUM,
@@ -118,7 +124,7 @@ def run_torch(
         logging.info(f'Starting training epoch {epoch}')
         for batch in train_loader:
 
-            # Put inputs and labels in correct shape order
+            # Put inputs and labels in correct shape order (TODO: move this to model as first layer)
             to_channels_first = MoveDim(-1, 1)
             inputs, labels = to_channels_first(batch['inputs']),to_channels_first(batch['labels'])
 
@@ -231,7 +237,8 @@ def main() -> None:
             mixed_precision=args.mixed_precision,
         )  
         
-    except torch.cuda.OutOfMemoryError: # If we run out of memory, use checkpointing
+    # If we run out of memory, use checkpointing
+    except torch.cuda.OutOfMemoryError:
         run_torch(data_path=args.data_path,
             model_path=args.model_path,
             epochs=args.epochs,

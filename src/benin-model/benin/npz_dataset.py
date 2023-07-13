@@ -60,13 +60,6 @@ class DatasetFromPath(Dataset):
         self._labels = np.float32(labels)
         self._ogpath = data_path
         
-        
-    def get_inputs(self) -> np.ndarray:
-        return self._inputs
-    
-    def get_labels(self) -> np.ndarray:
-        return self._labels
-        
     def __getitem__(self, index) -> Any:
         if(isinstance(index, int)):
         # Using dictionary support like in weather forecasting sample

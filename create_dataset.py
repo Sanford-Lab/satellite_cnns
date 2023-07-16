@@ -144,7 +144,7 @@ def run_tf(
     beam_options = PipelineOptions(
         beam_args,
         save_main_session=True,
-        setup_file="./tf_setup.py",
+        setup_file="./setup.py",
         max_num_workers=max_requests,  # distributed runners
         direct_num_workers=max(max_requests, 20),  # direct runner
         disk_size_gb=50,

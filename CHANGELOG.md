@@ -21,6 +21,13 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Save created model directly to VertexAI
   - Ref "Training did not produce a Managed Model returning None. Training Pipeline projects/978289642310/locations/us-central1/trainingPipelines/5677616430787330048 is not configured to upload a Model. Create the Training Pipeline with model_serving_container_image_uri and model_display_name passed in. Ensure that your training script saves to model to os.environ['AIP_MODEL_DIR']."
 
+## 7/16:
+- 
+
+## 7/14:
+- Worked on predictions
+  - Notebook does patch by batch, more difficult to batch patches for land just in Benin geometry
+
 
 ## 7/6:
 - Continued work on U-Net implementation and train.py

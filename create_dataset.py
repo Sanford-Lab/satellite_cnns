@@ -72,7 +72,7 @@ def write_npz(batch: list[tuple[np.ndarray, np.ndarray]], data_path: str) -> str
         np.savez_compressed(f, inputs=inputs, labels=labels)
     return filename
 
-def run(
+def run_torch(
     data_path: str,
     points_per_class: int = POINTS_PER_CLASS,
     patch_size: int = PATCH_SIZE,
@@ -97,6 +97,72 @@ def run(
             | "📝 Write NPZ files" >> beam.Map(write_npz, data_path)
         )
 
+def serialize_tensorflow(inputs: np.ndarray, labels: np.ndarray) -> bytes:
+    """Serializes inputs and labels NumPy arrays as a tf.Example.
+
+    Both inputs and outputs are expected to be dense tensors, not dictionaries.
+    We serialize both the inputs and labels to save their shapes.
+
+    Args:
+        inputs: The example inputs as dense tensors.
+        labels: The example labels as dense tensors.
+
+    Returns: The serialized tf.Example as bytes.
+    """
+    import tensorflow as tf
+
+    features = {
+        name: tf.train.Feature(
+            bytes_list=tf.train.BytesList(value=[tf.io.serialize_tensor(data).numpy()])
+        )
+        for name, data in {"inputs": inputs, "labels": labels}.items()
+    }
+    example = tf.train.Example(features=tf.train.Features(feature=features))
+    return example.SerializeToString()
+
+def run_tf(
+    data_path: str,
+    points_per_class: int = POINTS_PER_CLASS,
+    patch_size: int = PATCH_SIZE,
+    max_requests: int = MAX_REQUESTS,
+    beam_args: Optional[List[str]] = None,
+) -> None:
+    """Runs an Apache Beam pipeline to create a dataset.
+    This fetches data from Earth Engine and creates a TFRecords dataset.
+    We use `max_requests` to limit the number of concurrent requests to Earth Engine
+    to avoid quota issues. You can request for an increas of quota if you need it.
+    Args:
+        data_path: Directory path to save the TFRecord files.
+        points_per_class: Number of points to get for each classification.
+        patch_size: Size in pixels of the surrounding square patch.
+        max_requests: Limit the number of concurrent requests to Earth Engine.
+        polygons: List of polygons to pick points from.
+        beam_args: Apache Beam command line arguments to parse as pipeline options.
+    """
+    # Equally divide the number of points by the number of concurrent requests.
+
+    beam_options = PipelineOptions(
+        beam_args,
+        save_main_session=True,
+        setup_file="./tf_setup.py",
+        max_num_workers=max_requests,  # distributed runners
+        direct_num_workers=max(max_requests, 20),  # direct runner
+        disk_size_gb=50,
+    )
+    with beam.Pipeline(options=beam_options) as pipeline:
+        (
+            pipeline
+            | "🌱 Make seeds" >> beam.Create([0])
+            | "📌 Sample points" >> beam.FlatMap(sample_points, points_per_class=points_per_class)
+            | "🃏 Reshuffle" >> beam.Reshuffle()
+            | "🛰 Get examples" >> beam.Map(get_training_example, patch_size=patch_size)
+            | "✍🏽 Serialize" >> beam.MapTuple(serialize_tensorflow)
+            | "📚 Write TFRecords" >> beam.io.WriteToTFRecord(
+                f"{data_path}/part", file_name_suffix=".tfrecord.gz"
+            )
+    )
+     
+
 
 def main() -> None:
     """Main script for creating dataset in DataFlow
@@ -110,6 +176,7 @@ def main() -> None:
     logging.getLogger().setLevel(logging.INFO)
     
     parser = argparse.ArgumentParser()
+    parser.add_argument("framework", choices=["torch", "tensorflow"])
     
     parser.add_argument(
         "--data-path",
@@ -120,13 +187,13 @@ def main() -> None:
         "--ppc",
         type=int,
         default=POINTS_PER_CLASS,
-        help="Points per class for strat sampling.",
+        help=f"Points per class for strat sampling. Default is {POINTS_PER_CLASS}.",
     )
     parser.add_argument(
         "--max-requests",
         type=int,
         default=MAX_REQUESTS,
-        help="Limit the number of concurrent requests to Earth Engine.",
+        help=f"Limit the number of concurrent requests to Earth Engine. Default is {MAX_REQUESTS}.",
     )
     parser.add_argument(
         "--patch-size",
@@ -135,16 +202,28 @@ def main() -> None:
         help=f"Patch size for image. Default is {PATCH_SIZE}.",
     )
     args, beam_args = parser.parse_known_args()
-
-    run(
-        data_path=args.data_path,
-        points_per_class=args.ppc,
-        max_requests=args.max_requests,
-        patch_size=args.patch_size,
-        beam_args=beam_args,
-    )
-
-
+    
+    if args.framework == "torch":
+        run_torch(
+            data_path=args.data_path,
+            points_per_class=args.ppc,
+            max_requests=args.max_requests,
+            patch_size=args.patch_size,
+            beam_args=beam_args,
+        )
+    
+    if args.framework == "tensorflow":
+        run_tf(
+            data_path=args.data_path,
+            points_per_class=args.ppc,
+            max_requests=args.max_requests,
+            patch_size=args.patch_size,
+            beam_args=beam_args,
+        )
+    else:
+        raise ValueError(f"framework not supported: {args.framework}")
+    
+    
 
 if __name__ == "__main__":
     main()

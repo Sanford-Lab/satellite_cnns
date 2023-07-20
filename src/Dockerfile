@@ -9,7 +9,6 @@ ADD /benin-model /benin-model
 COPY requirements.txt /tmp/base_requirements.txt
 
 RUN pip install tensorflow
-#RUN pip install benin-data benin-model
 RUN pip install -r /tmp/base_requirements.txt
 
 

@@ -1,10 +1,10 @@
-# dd_changenotes:
+# dd worknotes:
 GC == Google Cloud
 GS == Google Storage
 
 Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python-docs-samples/tree/main/people-and-planet-ai/weather-forecasting)
 
-## Currently Working on: custom PyTorch Datset class and Subset functionality
+## Currently Working on: tensorflow support
 
 ## To Do
 [ ] Now that we're using NPZ files, test if we need to convert labels to float64 (`as_double` functionality in Benin [data.py](src/benin-data/benin/data.py))\
@@ -21,8 +21,22 @@ Adjusted for [weather AI notebook](https://github.com/GoogleCloudPlatform/python
 [ ] Save created model directly to VertexAI
   - Ref "Training did not produce a Managed Model returning None. Training Pipeline projects/978289642310/locations/us-central1/trainingPipelines/5677616430787330048 is not configured to upload a Model. Create the Training Pipeline with model_serving_container_image_uri and model_display_name passed in. Ensure that your training script saves to model to os.environ['AIP_MODEL_DIR']."
 
+## 7/20:
+- Tried creating Docker image locally in Colab
+  - Docker too convoluted to use in cells
+  - Image too large to upload each job
+  - A waste to spend time and resources re-building with same base image but different data and model packages
+- Tried using pre-built personal Docker Hub image
+  - Failed to access -- still might be a solution, but can't get it to work currently. Could use Google's Artifact registry but costs money.
+- Tried just adding tensorflow in requirements.txt so it's installed before the job runs. 
+  - For some reason getting worker error "A n1-standard-1 VM instance is currently unavailable in the us-central1-a zone. Alternatively, you can try your request again with a different VM hardware configuration or at a later time. For more information, see the troubleshooting documentation." Check [page](https://cloud.google.com/compute/docs/resource-error).
+  - Error could be that tensorflow is trying to use resources that isn't in the GC quota or it needs resources that aren't given to it.
+
+## 7/18:
+- Started Docker SDK
+
 ## 7/16:
-- 
+- Started implementing tensorflow framework to use previous
 
 ## 7/14:
 - Worked on predictions

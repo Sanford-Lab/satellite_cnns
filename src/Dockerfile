@@ -4,12 +4,12 @@ MAINTAINER dannie.daley@yale.edu
 
 
 # Prebuilt dependencies
-ADD /benin-data /benin-data
-ADD /benin-model /benin-model
-COPY requirements.txt /tmp/base_requirements.txt
+#ADD /benin-data /benin-data
+#ADD /benin-model /benin-model
+#COPY requirements.txt /tmp/base_requirements.txt
 
 RUN pip install tensorflow
-RUN pip install -r /tmp/base_requirements.txt
+#RUN pip install -r /tmp/base_requirements.txt
 
 
 # Set the entrypoint to the Apache Beam SDK launcher.

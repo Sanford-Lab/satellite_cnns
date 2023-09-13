@@ -92,7 +92,7 @@ def run_torch(
     
     # Optimizer
     if optimizer == 'RMS':
-        optimizer = torch.optim.RMSpro(model.parameters(),
+        optimizer = torch.optim.RMSprop(model.parameters(),
                         lr=LEARNING_RATE,
                         weight_decay=WEIGHT_DECAY,
                         momentum=MOMENTUM,

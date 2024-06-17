@@ -105,11 +105,15 @@ def get_inputs_image() -> ee.Image:
     # Grab the Benin feature (shape of country)
     benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na','Benin')).set('ORIG_FID',0)
 
-    # Prepare the cloud masked LANDSAT 7 median composite image
-    benin_input = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2007-01-01', '2008-12-31')
+    # # Prepare the cloud masked LANDSAT 7 median composite image
+    # benin_input = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2007-01-01', '2008-12-31')
 
-    # Remove clouds, clip it to the outline of Benin (with buffer)
-    benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
+    # # Remove clouds, clip it to the outline of Benin (with buffer)
+    # benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
+
+    # Use existing L7 annual composite
+    benin_input = var dataset = ee.ImageCollection('LANDSAT/LE7_TOA_1YEAR')filterDate('2007-01-01', '2008-12-31')
+    benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
 
     # Create NDVI band, rename RGB
     ndvi_img = benin_input.normalizedDifference(thermalBands).rename(['NDVI'])

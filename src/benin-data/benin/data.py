@@ -118,8 +118,8 @@ def get_inputs_image() -> ee.Image:
     l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1').filterDate('2006-1-1', '2008-12-31')
 
     benin_input = (ee.Algorithms.Landsat.simpleComposite({
-    collection: l7_filtered,
-    asFloat: true
+    'collection': l7_filtered,
+    'asFloat': True
     }).clip(benin_shape.geometry().buffer(10000)))
 
     # Create NDVI band, rename RGB

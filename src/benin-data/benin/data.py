@@ -121,7 +121,7 @@ def get_inputs_image() -> ee.Image:
 
     # Create a simple composite using the filtered collection
     # The asFloat parameter gives floating-point TOA output
-    benin_input = ee.Algorithms.Landsat.simpleComposite({
+    benin_input = (ee.Algorithms.Landsat.simpleComposite({
         'collection': l7_filtered,
         'asFloat': True
     }).clip(benin_shape.geometry().buffer(10000)))

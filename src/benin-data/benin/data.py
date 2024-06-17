@@ -112,7 +112,7 @@ def get_inputs_image() -> ee.Image:
     # benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
 
     # Use existing L7 annual composite
-    benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_1YEAR').filterDate('2007-01-01', '2008-12-31')
+    benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_1YEAR').filterDate('2007-01-01', '2008-12-31').first()
     benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
 
     # Create NDVI band, rename RGB

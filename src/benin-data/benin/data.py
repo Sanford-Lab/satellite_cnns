@@ -141,9 +141,9 @@ def get_labels_image(as_double:bool = True) -> ee.Image:
       labels image as ee.Image with 'target' band
     """
 
-    # Import vornoi a ('ls-test-3-24/assets/voronoi_villages')
+    # Import vornoi a ('mike-luke/assets/voronoi_villages')
     # and convert to feature collection
-    treated_voronoi = ee.FeatureCollection('projects/ls-test-3-24/assets/voronoi_villages')\
+    treated_voronoi = ee.FeatureCollection('projects/mike-luke/assets/voronoi_villages')\
                                 .filter(ee.Filter.eq('treated', 1))
 
     # Create a village mask based on the treated village raster

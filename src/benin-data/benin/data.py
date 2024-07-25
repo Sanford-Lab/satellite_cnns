@@ -81,7 +81,6 @@ def mask_clouds_landsat(image: ee.Image) -> ee.Image:
     # Mask image with clouds and shadows
     return image.updateMask(mask)
 
-
 def get_inputs_image() -> ee.Image:
     """ Retrieves the input image for Benin data
 
@@ -98,91 +97,44 @@ def get_inputs_image() -> ee.Image:
 
     """
 
-    # Specify inputs (Landsat bands) to the model and the response variable.
-    opticalBands = ['B3', 'B2', 'B1']  # RGB
-    nirBand = 'B4'  # NIR
+    def prep_sr_l7(image):
+        # Develop masks for unwanted pixels (fill, cloud, cloud shadow).
+        qa_mask = image.select('QA_PIXEL').bitwiseAnd(int('11111', 2)).eq(0)
+        
+        # Apply the scaling factors to the appropriate bands.
+        def get_factor_img(factor_names):
+            factor_list = image.toDictionary().select(factor_names).values()
+            return ee.Image.constant(factor_list)
+        
+        scale_img = get_factor_img(['REFLECTANCE_MULT_BAND_.|TEMPERATURE_MULT_BAND_ST_B6'])
+        offset_img = get_factor_img(['REFLECTANCE_ADD_BAND_.|TEMPERATURE_ADD_BAND_ST_B6'])
+        scaled = image.select('SR_B.|ST_B6').multiply(scale_img).add(offset_img)
+        
+        # Replace original bands with scaled bands and apply masks.
+        return image.addBands(scaled, None, True).updateMask(qa_mask)
+
+    # Define the date range for the filter
+    start_date = '2006-01-01'
+    end_date = '2008-12-31'
+    
+    # Specify inputs (Landsat bands) to the model and the response variable
+    optical_bands = ['SR_B3', 'SR_B2', 'SR_B1']  # RGB
+    nir_band = 'SR_B4'  # NIR
     
     # Grab the Benin feature (shape of country)
-    benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na', 'Benin')).set('ORIG_FID', 0)
-
-    # # Prepare the cloud masked LANDSAT 7 median composite image
-    # benin_input = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2006-01-01', '2008-12-31')
-
-    # # Remove clouds, clip it to the outline of Benin (with buffer)
-    # benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
-
-    # Use existing L7 annual composite
-    #benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_3YEAR').filterDate('2008-01-01', '2008-12-31').first()
-    #benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
+    benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na', 'Benin')).first()
     
-    # Filter Landsat 7 images between the specified dates
+    # Filter and process the Landsat 7 Collection 2 dataset
     l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
-            .filterDate('2006-01-01', '2008-12-31') \
-            .select(['SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B7', 'QA_PIXEL'],
-                    ['B1', 'B2', 'B3', 'B4', 'B5', 'B7', 'QA_PIXEL'])
-    
-    # Create a simple composite using the filtered collection
-    benin_input = ee.Algorithms.Landsat.simpleComposite(l7_filtered) \
+        .filterDate(start_date, end_date) \
+        .map(prep_sr_l7) \
+        .median() \
         .clip(benin_shape.geometry().buffer(10000))
     
-    # Scale the pixel values
-    benin_input = benin_input.multiply(0.0001)
-
-    # Create NDVI band, rename RGB
-def get_inputs_image() -> ee.Image:
-    """ Retrieves the input image for Benin data
-
-    Uses Landsat7
-
-    Args:
-      as_double (bool): Whether to cast the image 
-          to a double. This is done to match the 
-          dtype of the input image
-
-    Returns:
-      ee.Image: inputs with bands 'R', 'G', 'B', 'NDVI'
-        - has benin geometry with 10000 buffer
-
-    """
-
-    # Specify inputs (Landsat bands) to the model and the response variable.
-    opticalBands = ['B3', 'B2', 'B1']  # RGB
-    nirBand = 'B4'  # NIR
-    
-    # Grab the Benin feature (shape of country)
-    benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na', 'Benin')).set('ORIG_FID', 0)
-
-    # # Prepare the cloud masked LANDSAT 7 median composite image
-    # benin_input = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2006-01-01', '2008-12-31')
-
-    # # Remove clouds, clip it to the outline of Benin (with buffer)
-    # benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
-
-    # Use existing L7 annual composite
-    #benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_3YEAR').filterDate('2008-01-01', '2008-12-31').first()
-    #benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
-    
-    # Filter Landsat 7 images between the specified dates
-    l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
-            .filterDate('2006-01-01', '2008-12-31') \
-            .select(['SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B7', 'QA_PIXEL'],
-                    ['B1', 'B2', 'B3', 'B4', 'B5', 'B7', 'QA_PIXEL'])
-    
-    # Create a simple composite using the filtered collection
-    benin_input = ee.Algorithms.Landsat.simpleComposite(l7_filtered) \
-        .clip(benin_shape.geometry().buffer(10000))
-    
-    # Scale the pixel values
-    benin_input = benin_input.multiply(0.0001)
-
-    # Create NDVI band, rename RGB
-    ndvi_img = benin_input.normalizedDifference([nirBand, 'B3']).rename(['NDVI'])
-    rgb_img = benin_input.select(opticalBands).rename(['R', 'G', 'B'])
-    
-    benin_input = rgb_img.addBands(ndvi_img)
-
-    return benin_input.unmask(0) 
-
+    # Create NDVI band, rename RGB, and combine
+    benin_input = l7_filtered.select(optical_bands + [nir_band]) \
+        .rename(['R', 'G', 'B', 'NIR']) \
+        .addBands(l7_filtered.normalizedDifference([nir_band, 'SR_B3']).rename('NDVI'))
 
     return benin_input.unmask(0) 
 

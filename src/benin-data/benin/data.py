@@ -136,7 +136,7 @@ def get_inputs_image() -> ee.Image:
 def get_labels_image(as_double:bool = True) -> ee.Image:
     """ Retrieves the labels image for Benin data
     
-        - Uses voronoi asset 'projects/ls-test-3-24/assets/voronoi_villages'
+        - Uses voronoi asset 'projects/satellite-cnns/assets/voronoi_villages'
         - Creates a mask where areas in villages are 1 and outside are 0
         - Geometry created based on get_inputs_image return
 
@@ -150,9 +150,9 @@ def get_labels_image(as_double:bool = True) -> ee.Image:
       labels image as ee.Image with 'target' band
     """
 
-    # Import vornoi a ('mike-luke/assets/voronoi_villages')
+    # Import vornoi a ('satellite-cnns/assets/voronoi_villages')
     # and convert to feature collection
-    treated_voronoi = ee.FeatureCollection('projects/mike-luke/assets/voronoi_villages')\
+    treated_voronoi = ee.FeatureCollection('projects/satellite-cnns/assets/voronoi_villages')\
                                 .filter(ee.Filter.eq('treated', 1))
 
     # Create a village mask based on the treated village raster

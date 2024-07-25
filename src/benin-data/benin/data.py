@@ -99,11 +99,11 @@ def get_inputs_image() -> ee.Image:
     """
 
     # Specify inputs (Landsat bands) to the model and the response variable.
-    opticalBands = ['SR_B3','SR_B2','SR_B1'] #RGB
-    thermalBands = ['SR_B4','SR_B3'] #NIR
-
+    opticalBands = ['B3', 'B2', 'B1']  # RGB
+    nirBand = 'B4'  # NIR
+    
     # Grab the Benin feature (shape of country)
-    benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na','Benin')).set('ORIG_FID',0)
+    benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na', 'Benin')).set('ORIG_FID', 0)
 
     # # Prepare the cloud masked LANDSAT 7 median composite image
     # benin_input = ee.ImageCollection("LANDSAT/LE07/C01/T1_SR").filterDate('2006-01-01', '2008-12-31')
@@ -117,7 +117,9 @@ def get_inputs_image() -> ee.Image:
     
     # Filter Landsat 7 images between the specified dates
     l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
-            .filterDate('2006-01-01', '2008-12-31')
+            .filterDate('2006-01-01', '2008-12-31') \
+            .select(['SR_B1', 'SR_B2', 'SR_B3', 'SR_B4', 'SR_B5', 'SR_B7', 'QA_PIXEL'],
+                    ['B1', 'B2', 'B3', 'B4', 'B5', 'B7', 'QA_PIXEL'])
     
     # Create a simple composite using the filtered collection
     benin_input = ee.Algorithms.Landsat.simpleComposite(l7_filtered) \

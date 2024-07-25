@@ -99,8 +99,8 @@ def get_inputs_image() -> ee.Image:
     """
 
     # Specify inputs (Landsat bands) to the model and the response variable.
-    opticalBands = ['B3','B2','B1'] #RGB
-    thermalBands = ['B4','B3'] #NIR
+    opticalBands = ['SR_B3','SR_B2','SR_B1'] #RGB
+    thermalBands = ['SR_B4','SR_B3'] #NIR
 
     # Grab the Benin feature (shape of country)
     benin_shape = ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017").filter(ee.Filter.eq('country_na','Benin')).set('ORIG_FID',0)
@@ -112,19 +112,19 @@ def get_inputs_image() -> ee.Image:
     # benin_input = (benin_input.map(mask_clouds_landsat).median().clip(benin_shape.geometry().buffer(10000)))
 
     # Use existing L7 annual composite
-    benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_3YEAR').filterDate('2008-01-01', '2008-12-31').first()
-    benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
+    #benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_3YEAR').filterDate('2008-01-01', '2008-12-31').first()
+    #benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
 
-    # # Filter Landsat 7 images between the specified dates
-    # l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1') \
-    #     .filterDate('2006-01-01', '2008-12-31')
+    # Filter Landsat 7 images between the specified dates
+    l7_filtered = eee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
+         .filterDate('2006-01-01', '2008-12-31')
 
-    # # Create a simple composite using the filtered collection
-    # # The asFloat parameter gives floating-point TOA output
-    # benin_input = (ee.Algorithms.Landsat.simpleComposite({
-    #     'collection': l7_filtered,
-    #     'asFloat': True
-    # }).clip(benin_shape.geometry().buffer(10000)))
+    # Create a simple composite using the filtered collection
+    # The asFloat parameter gives floating-point TOA output
+    benin_input = (ee.Algorithms.Landsat.simpleComposite({
+        'collection': l7_filtered,
+        'asFloat': True
+    }).clip(benin_shape.geometry().buffer(10000)))
 
     # Create NDVI band, rename RGB
     ndvi_img = benin_input.normalizedDifference(thermalBands).rename(['NDVI'])

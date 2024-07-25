@@ -114,15 +114,17 @@ def get_inputs_image() -> ee.Image:
     # Use existing L7 annual composite
     #benin_input = ee.ImageCollection('LANDSAT/LE7_TOA_3YEAR').filterDate('2008-01-01', '2008-12-31').first()
     #benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
-
+    
     # Filter Landsat 7 images between the specified dates
     l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
             .filterDate('2006-01-01', '2008-12-31')
-
+    
     # Create a simple composite using the filtered collection
-    # The asFloat parameter gives floating-point TOA output
-    benin_input = ee.Algorithms.Landsat.simpleComposite(l7_filtered, asFloat=True) \
+    benin_input = ee.Algorithms.Landsat.simpleComposite(l7_filtered) \
         .clip(benin_shape.geometry().buffer(10000))
+    
+    # Scale the pixel values
+    benin_input = benin_input.multiply(0.0001)
 
     # Create NDVI band, rename RGB
     ndvi_img = benin_input.normalizedDifference(thermalBands).rename(['NDVI'])

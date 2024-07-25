@@ -56,7 +56,7 @@ assert(SAMPLE_SCALE % PATCH_SCALE == 0) # PATCH_SCALE should be multiple of SAMP
 #OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 # The following code should be edited depending on the project.
 # 
-# To be a funcitonal file for creating a dataset, define
+# To be a functional file for creating a dataset, define
 #   - get_inputs_image()-> ee.Image
 #   - get_labels_image()-> ee.Image
 #   - sample_points(seed: int, points_per_class: int) -> Iterable[tuple[float, float]]
@@ -117,14 +117,14 @@ def get_inputs_image() -> ee.Image:
 
     # Filter Landsat 7 images between the specified dates
     l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
-         .filterDate('2006-01-01', '2008-12-31')
+            .filterDate('2006-01-01', '2008-12-31')
 
     # Create a simple composite using the filtered collection
     # The asFloat parameter gives floating-point TOA output
-    benin_input = (ee.Algorithms.Landsat.simpleComposite({
-        'collection': l7_filtered,
+    benin_input = ee.Algorithms.Landsat.simpleComposite({
+        'collection': l7_filtered, 
         'asFloat': True
-    }).clip(benin_shape.geometry().buffer(10000)))
+    }).clip(benin_shape.geometry().buffer(10000))
 
     # Create NDVI band, rename RGB
     ndvi_img = benin_input.normalizedDifference(thermalBands).rename(['NDVI'])
@@ -139,7 +139,7 @@ def get_labels_image(as_double:bool = True) -> ee.Image:
     """ Retrieves the labels image for Benin data
     
         - Uses voronoi asset 'projects/ls-test-3-24/assets/voronoi_villages'
-        - Creates a mask where areas in villages are 1 and outisde are 0
+        - Creates a mask where areas in villages are 1 and outside are 0
         - Geometry created based on get_inputs_image return
 
 

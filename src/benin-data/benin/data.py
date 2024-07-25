@@ -116,7 +116,7 @@ def get_inputs_image() -> ee.Image:
     #benin_input = (benin_input.clip(benin_shape.geometry().buffer(10000)))
 
     # Filter Landsat 7 images between the specified dates
-    l7_filtered = eee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
+    l7_filtered = ee.ImageCollection('LANDSAT/LE07/C02/T1_L2') \
          .filterDate('2006-01-01', '2008-12-31')
 
     # Create a simple composite using the filtered collection

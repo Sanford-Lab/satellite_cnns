@@ -141,7 +141,7 @@ def run_torch(
                 masks_pred = model(inputs)
                 if model.n_classes == 1:
                     loss = criterion(masks_pred.squeeze(1), labels.float().squeeze(1))
-                    loss += dice_loss(F.sigmoid(masks_pred.squeeze(1)), labels.float().squeeze(1), multiclass=False)
+                    loss += dice_loss(torch.sigmoid(masks_pred.squeeze(1)), labels.float().squeeze(1), multiclass=False)
                 else:
                     loss = criterion(masks_pred, labels)
                     loss += dice_loss(

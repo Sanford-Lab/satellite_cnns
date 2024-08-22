@@ -22,7 +22,23 @@ T = TypeVar('T')
 import numpy as np
 from torch.utils.data import Dataset
 from torch import Generator, randperm
-from torch._utils import _accumulate
+
+# Include functions that have been removed in a newer version of PyTorch
+# old: from torch._utils import _accumulate
+# source: https://github.com/pytorch/pytorch/blob/v2.2.0/torch/_utils.py#L497
+def _accumulate(iterable, fn=lambda x, y: x + y):
+    "Return running totals"
+    # _accumulate([1,2,3,4,5]) --> 1 3 6 10 15
+    # _accumulate([1,2,3,4,5], operator.mul) --> 1 2 6 24 120
+    it = iter(iterable)
+    try:
+        total = next(it)
+    except StopIteration:
+        return
+    yield total
+    for element in it:
+        total = fn(total, element)
+        yield total
 
 # Default values
 SEED = 0

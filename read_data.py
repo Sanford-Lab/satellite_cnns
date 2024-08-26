@@ -20,25 +20,9 @@ T_co = TypeVar('T_co', covariant=True)
 T = TypeVar('T')
 
 import numpy as np
+from itertools import accumulate
 from torch.utils.data import Dataset
 from torch import Generator, randperm
-
-# Include functions that have been removed in a newer version of PyTorch
-# old: from torch._utils import _accumulate
-# source: https://github.com/pytorch/pytorch/blob/v2.2.0/torch/_utils.py#L497
-def _accumulate(iterable, fn=lambda x, y: x + y):
-    "Return running totals"
-    # _accumulate([1,2,3,4,5]) --> 1 3 6 10 15
-    # _accumulate([1,2,3,4,5], operator.mul) --> 1 2 6 24 120
-    it = iter(iterable)
-    try:
-        total = next(it)
-    except StopIteration:
-        return
-    yield total
-    for element in it:
-        total = fn(total, element)
-        yield total
 
 # Default values
 SEED = 0
@@ -191,4 +175,4 @@ def custom_random_split(dataset: Dataset[T], lengths: Sequence[Union[int, float]
         raise ValueError("Sum of input lengths does not equal the length of the input dataset!")
 
     indices = randperm(sum(lengths), generator=generator).tolist()  # type: ignore[call-overload]
-    return [CustomSubset(dataset, indices[offset - length : offset]) for offset, length in zip(_accumulate(lengths), lengths)]
+    return [CustomSubset(dataset, indices[offset - length : offset]) for offset, length in zip(accumulate(lengths), lengths)]

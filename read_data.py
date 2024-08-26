@@ -84,7 +84,7 @@ def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed 
     assert(ratio >=0 and ratio <= 1)
     seed_gen = Generator().manual_seed(SEED)
     
-    return custom_random_split(dataset=data, lengths=[ratio, (1-ratio)], generator=seed_gen)
+    return custom_random_split(dataset=data, lengths=[round(ratio,2), round(1-ratio,2)], generator=seed_gen)
 
 
 class EmptyDirectoryError(Exception):

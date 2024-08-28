@@ -1,9 +1,18 @@
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
-#                                                                       #
-#               THIS FILE IS REDUNDANT W/ npz_dataset.py                #
-#        (local module may be helpful, but will not be updated)         #
-#                                                                       #
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#
+#   This module allows you to create a PyTorch torch.utils.data.Dataset from 
+#   a path that contains NumPy compressed files (NPZ) files
+#
+#       -   Expects *.npz.files to be 'inputs' and 'labels'
+#       -   train_test_split: splits DatasetFromPath into a custom subset 
+#           (CustomSubset) for more convenient data access
+#       -   Currently should be good to go for different projects as long as
+#           npz files are in correct format
+#
+#   SPIRES Lab, 2023
+#
+#   Note: This is based on a copy of W/ npz_dataset.py and is frequently updated.
+# ______________________________________________________________________________________________________________
+
 
 import os
 from glob import glob
@@ -16,17 +25,17 @@ from typing import (
     TypeVar
 )
 
+import numpy as np
+from torch.utils.data import Dataset
+from torch import Generator, randperm
+from itertools import accumulate
+
 T_co = TypeVar('T_co', covariant=True)
 T = TypeVar('T')
 
-import numpy as np
-from itertools import accumulate
-from torch.utils.data import Dataset
-from torch import Generator, randperm
-
 # Default values
 SEED = 0
-TEST_TRAIN_RATIO = 0.66
+TRAIN_TEST_RATIO = 0.8
 
 class DatasetFromPath(Dataset):
     """torch.utils.data.Dataset custom subclass
@@ -38,7 +47,7 @@ class DatasetFromPath(Dataset):
     def __init__(self, data_path : str) -> None:
         files = glob(os.path.join(data_path, "*.npz"))
         if len(files) <= 0:
-            raise EmptyDirectoryError()
+            raise EmptyDirectoryError(data_path)
     
         first_file = np.load(files[0])
         inputs, labels = first_file['inputs'], first_file['labels']
@@ -50,6 +59,7 @@ class DatasetFromPath(Dataset):
         # We're going to put it to float32 to be consistant w NumPy floats
         self._inputs = np.float32(inputs)
         self._labels = np.float32(labels)
+        self._ogpath = data_path
         
         
     def get_inputs(self) -> np.ndarray:
@@ -69,7 +79,11 @@ class DatasetFromPath(Dataset):
     def __len__(self) -> int:
         return len(self._inputs) 
     
-def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed = SEED)-> tuple:
+    def __str__(self) -> str:
+        return f'Dataset from \'{self._ogpath}\', size: {self.__len__()}, inputs: {self._inputs.shape}, labels: {self._labels.shape}'
+    
+
+def train_test_split(data:DatasetFromPath, ratio:float = TRAIN_TEST_RATIO, seed = SEED)-> tuple:
     """Splits the given dataset by the ratio given. Implements a random split per 
     torch.utils.data.randomsplit
 
@@ -89,9 +103,9 @@ def test_train_split(data:DatasetFromPath, ratio:float = TEST_TRAIN_RATIO, seed 
 
 class EmptyDirectoryError(Exception):
     
-    def __init__(self,
+    def __init__(self, path,
                  message=f'Path is empty or does not contain files ending in .npz') -> None:
-        self.message = message
+        self.message = message + f'\tPath given: \"{path}\"'
         super().__init__(self.message)
         
 class CustomSubset(Dataset[T_co]):

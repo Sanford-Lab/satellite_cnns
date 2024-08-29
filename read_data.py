@@ -22,12 +22,13 @@ from typing import (
     Optional,
     Sequence,
     Union,
-    TypeVar
+    TypeVar,
+    Callable
 )
 
 import numpy as np
 from torch.utils.data import Dataset
-from torch import Generator, randperm
+from torch import Generator, randperm, Tensor
 from itertools import accumulate
 
 T_co = TypeVar('T_co', covariant=True)
@@ -66,7 +67,7 @@ class DatasetFromPath(Dataset):
         return self._inputs
     
     def get_labels(self) -> np.ndarray:
-        return self._labels
+        return self._labelsv
         
     def __getitem__(self, index) -> Any:
         if(isinstance(index, int)):
@@ -83,7 +84,7 @@ class DatasetFromPath(Dataset):
         return f'Dataset from \'{self._ogpath}\', size: {self.__len__()}, inputs: {self._inputs.shape}, labels: {self._labels.shape}'
     
 
-def train_test_split(data:DatasetFromPath, ratio:float = TRAIN_TEST_RATIO, seed = SEED)-> tuple:
+def train_test_split(data:DatasetFromPath, ratio:float = TRAIN_TEST_RATIO, seed = SEED, transform_dict:dict[str, Callable[..., Tensor]] | None = None) -> tuple:
     """Splits the given dataset by the ratio given. Implements a random split per 
     torch.utils.data.randomsplit
 
@@ -91,14 +92,23 @@ def train_test_split(data:DatasetFromPath, ratio:float = TRAIN_TEST_RATIO, seed 
         data (DatasetFromPath): dataset
         ratio (float, optional): ratio between 0 and 1 inclusive. Defaults to TEST_TRAIN_RATIO.
         seed (_type_, optional): seed used for shuffling a random split. Defaults to SEED.
+        transform (dict[str, Callable[..., Tensor]] | None, optional): Dictionary of transform functions for train and test dataset. Default to None.
 
     Returns:
         tuple: (test subset, train sub) both as torch.utils.data.Subset objects
     """
     assert(ratio >=0 and ratio <= 1)
     seed_gen = Generator().manual_seed(SEED)
-    
-    return custom_random_split(dataset=data, lengths=[round(ratio,2), round(1-ratio,2)], generator=seed_gen)
+
+    if not transform_dict:
+        return custom_random_split(dataset=data, lengths=[round(ratio,2), round(1-ratio,2)], generator=seed_gen)
+    else:
+        train, test = custom_random_split(dataset=data, lengths=[round(ratio,2), round(1-ratio,2)], generator=seed_gen)
+
+        train = CustomTransformedDataset(train, transform_dict['train'])
+        test = CustomTransformedDataset(test, transform_dict['test'])
+
+        return train, test
 
 
 class EmptyDirectoryError(Exception):
@@ -108,6 +118,7 @@ class EmptyDirectoryError(Exception):
         self.message = message + f'\tPath given: \"{path}\"'
         super().__init__(self.message)
         
+
 class CustomSubset(Dataset[T_co]):
     """
     Subset of a dataset at specified indices.
@@ -134,6 +145,29 @@ class CustomSubset(Dataset[T_co]):
         return len(self.indices)
 
 
+class CustomTransformedDataset(CustomSubset):
+    def __init__(self, dataset: CustomSubset, transform = None):
+        self.dataset = dataset
+        self.transform = transform
+
+    def __getitem__(self, index):
+        if(isinstance(index, int)):
+            input = self.dataset[index]['inputs']
+            label = self.dataset[index]['labels']
+        
+            if self.transform:
+                input, label = self.transform(input, label)
+            
+            return {'inputs': input, 'labels' : input}
+        
+        elif isinstance(index, str) & (index == 'inputs' or index == 'labels'):
+            if self.transform:
+                # The v2 transforms generally accept an arbitrary number of leading dimensions (..., C, H, W),
+                # whereas the shape of dataset[index] is (# in batch, PATCH_SIZE, PATCH_SIZE, # of bands).
+                return self.transform(np.transpose(self.dataset[index], (0, 3, 1, 2)))
+            else:
+                return self.dataset[index]
+        
 
 def custom_random_split(dataset: Dataset[T], lengths: Sequence[Union[int, float]],
                  generator: Optional[Generator] = Generator().manual_seed(0)) -> List[CustomSubset[T]]:

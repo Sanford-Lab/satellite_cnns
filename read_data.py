@@ -163,7 +163,7 @@ class CustomTransformedDataset(CustomSubset):
                 label = torch.from_numpy(np.transpose(label, (2,0,1)))
                 input, label = self.transform(input, label)
             
-            return {'inputs': input, 'labels' : input}
+            return {'inputs': input, 'labels' : label}
         
         elif isinstance(index, str) & (index == 'inputs' or index == 'labels'):
             if self.transform:

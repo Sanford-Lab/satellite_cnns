@@ -28,6 +28,7 @@ from typing import (
 
 import numpy as np
 from torch.utils.data import Dataset
+import torch
 from torch import Generator, randperm, Tensor
 from itertools import accumulate
 
@@ -156,6 +157,10 @@ class CustomTransformedDataset(CustomSubset):
             label = self.dataset[index]['labels']
         
             if self.transform:
+                # Transforms expects Tensor images of shape (C, H, W),
+                # where C is the number of channels, and H and W refer to height and width.
+                input = torch.from_numpy(np.transpose(input, (2,0,1)))
+                label = torch.from_numpy(np.transpose(label, (2,0,1)))
                 input, label = self.transform(input, label)
             
             return {'inputs': input, 'labels' : input}
@@ -164,9 +169,12 @@ class CustomTransformedDataset(CustomSubset):
             if self.transform:
                 # The v2 transforms generally accept an arbitrary number of leading dimensions (..., C, H, W),
                 # whereas the shape of dataset[index] is (# in batch, PATCH_SIZE, PATCH_SIZE, # of bands).
-                return self.transform(np.transpose(self.dataset[index], (0, 3, 1, 2)))
+                return self.transform(torch.from_numpy(np.transpose(self.dataset[index], (0, 3, 1, 2))))
             else:
                 return self.dataset[index]
+    
+    def __len__(self):
+        return self.dataset['labels'].shape[0]
         
 
 def custom_random_split(dataset: Dataset[T], lengths: Sequence[Union[int, float]],
